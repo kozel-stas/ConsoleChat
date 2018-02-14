@@ -16,8 +16,4 @@ public class Main {
         new ChatServer(8080).run();
     }
 
-    private static void set(User a){
-        a.setAgent(new Agent("suka"));
-    }
-
 }

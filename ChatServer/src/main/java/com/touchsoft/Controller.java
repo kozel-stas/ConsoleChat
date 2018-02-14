@@ -6,6 +6,11 @@ public class Controller {
     private static CopyOnWriteArrayList<Agent> agents = new CopyOnWriteArrayList();//массивы нужны тут, если реализовывать сохранение агентов и юзеров
     private static CopyOnWriteArrayList<User> users = new CopyOnWriteArrayList<User>();
     private Client client = null;
+    private SocketHandler socket;
+
+    public Controller(SocketHandler socket){
+        this.socket=socket;
+    }
 
     public CommandContainer handler(CommandContainer container) {
         if (client == null) {
@@ -98,7 +103,7 @@ public class Controller {
                         return new CommandContainer("Выбранное имя уже занято", "server");
                     }
                 }
-                Agent agent = new Agent(line);
+                Agent agent = new Agent(line,socket);
                 agents.add(agent);
                 client = agent;
                 return new CommandContainer(line,true,"good");
@@ -118,7 +123,7 @@ public class Controller {
                     return new CommandContainer("Выбранное имя уже занято", "server");
                 }
             }
-            User user = new User(line);
+            User user = new User(line,socket);
             findAgent(user);
             users.add(user);
             client = user;
@@ -130,9 +135,9 @@ public class Controller {
 
     private void findAgent(User user) {
         for (int i = 0; i < agents.size(); i++) {
-            if (agents.get(i).getUser() == null) {
-                user.setAgent(agents.get(i));
-                agents.get(i).setUser(user);
+            if (agents.get(i).getRecipient() == null) {
+                user.setRecipient(agents.get(i).getMysocket());
+                agents.get(i).setRecipient(user.getMysocket());
                 break;
             }
         }

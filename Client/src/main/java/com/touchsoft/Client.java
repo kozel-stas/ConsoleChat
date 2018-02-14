@@ -19,7 +19,6 @@ public class Client {
     }
 
 class User extends com.touchsoft.Client {
-        private Agent agent = null;
         private Date date = new Date();
         private long last_activity;
         private long timeout = 300000;
@@ -27,14 +26,6 @@ class User extends com.touchsoft.Client {
         public User(String name) {
             super(name);
             last_activity = date.getTime();
-        }
-
-        public Agent getAgent() {
-            return agent;
-        }
-
-        public void setAgent(Agent agent) {
-            this.agent = agent;
         }
 
         public boolean checkTimeout() {
@@ -49,29 +40,10 @@ class User extends com.touchsoft.Client {
     }
 
 class Agent extends com.touchsoft.Client {
-        private int number_of_task;
-        private User user = null;
 
         public Agent(String name) {
             super(name);
-            number_of_task = 0;
         }
-
-        public User getUser() {
-            return user;
-        }
-
-        public void setUser(User user) {
-            this.user = user;
-        }
-
-        public int getNumber_of_task() {
-            return number_of_task;
-        }
-
-        public void iteration_number_of_task() {
-            number_of_task++;
-        }
-    }
+}
 
 

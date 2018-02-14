@@ -6,11 +6,16 @@ public class Client {
     private String name;
     private boolean status; //реализовтаь при сохранении агентов и юзеров
     private SocketHandler recipient;
-
+    private SocketHandler mysocket;
     protected Client(){}
 
-    public Client(String name){
+    public Client(String name,SocketHandler mysocket){
         this.name=name;
+        this.mysocket=mysocket;
+    }
+
+    public SocketHandler getMysocket() {
+        return mysocket;
     }
 
     public SocketHandler getRecipient() {
@@ -27,22 +32,13 @@ public class Client {
 }
 
 class User extends Client{
-    private Agent agent=null;
     private Date date =new Date();
     private long last_activity;
     private long timeout=300000;
 
-    public User (String name){
-        super(name);
+    public User (String name,SocketHandler mysocket){
+        super(name,mysocket);
         last_activity=date.getTime();
-    }
-
-    public Agent getAgent() {
-        return agent;
-    }
-
-    public void setAgent(Agent agent) {
-        this.agent = agent;
     }
 
     public boolean checkTimeout (){
@@ -58,19 +54,10 @@ class User extends Client{
 
 class Agent extends Client{
     private int number_of_task;
-    private User user=null;
 
-    public Agent (String name){
-        super(name);
+    public Agent (String name,SocketHandler mysocket){
+        super(name,mysocket);
         number_of_task=0;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public int getNumber_of_task() {

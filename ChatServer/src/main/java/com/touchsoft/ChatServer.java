@@ -40,20 +40,22 @@ class SocketHandler implements Runnable {
         this.connect=connect;
         input = new ObjectInputStream(connect.getInputStream());
         output =new ObjectOutputStream(connect.getOutputStream());
+        controler = new Controller(this);
     }
 
     public void setConnect(Socket connect) throws IOException  {
         this.connect = connect;
         input = new ObjectInputStream(connect.getInputStream());
         output =new ObjectOutputStream(connect.getOutputStream());
+        controler = new Controller(this);
     }
 
     public void run()  {
-        if (!connect.isClosed()){
-            controler = new Controller();
+        while (!connect.isClosed()){
             try {
                 CommandContainer command = (CommandContainer) input.readObject();
-                CommandContainer answer = controler.handler(command);
+                send(controler.handler(command));
+
             }
             catch(IOException ex){
                 close();
@@ -74,7 +76,7 @@ class SocketHandler implements Runnable {
         }
     }
 
-    protected void send(CommandContainer container){
+    synchronized protected void send(CommandContainer container){
         if (!connect.isClosed()){
             try {
                 output.writeObject(container);
