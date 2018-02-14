@@ -9,8 +9,8 @@ public class CommandContainer implements Serializable {
     private String message;
     private String serverinfo;
 
-    public CommandContainer (String serverinfo){
-        this.name=null;
+    public CommandContainer (String serverinfo, String name){
+        this.name="Server";
         this.isAgent=false;
         this.command=null;
         this.message=null;
@@ -24,8 +24,7 @@ public class CommandContainer implements Serializable {
         this.message = message;
     }
 
-    public CommandContainer (String command, String name) {
-        this.name = name;
+    public CommandContainer (String command) {
         this.isAgent = false;
         this.command = command;
         this.message = null;

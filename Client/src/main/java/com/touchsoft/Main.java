@@ -8,12 +8,10 @@ public class Main {
         Socket connect = new Socket("localhost",8080);
         ObjectOutputStream output=new ObjectOutputStream(connect.getOutputStream());
         DataInputStream in=new DataInputStream(connect.getInputStream());
-        CommandContainer a=new CommandContainer("/startter");
-        CommandContainer b=new CommandContainer("/str");
+        CommandContainer a=new CommandContainer("/register client Vlad");
         output.writeObject(a);
         output.flush();
-        output.writeObject(b);
-        output.flush();
+        in.readUTF();
         connect.close();
     }
 }

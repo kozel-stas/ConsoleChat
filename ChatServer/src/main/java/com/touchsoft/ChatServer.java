@@ -3,13 +3,10 @@ package com.touchsoft;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ChatServer {
     private int port;
     private ServerSocket server;
-    private CopyOnWriteArrayList<Agent> agents  = new CopyOnWriteArrayList();//массивы нужны тут, если реализовывать сохранение агентов и юзеров
-    private CopyOnWriteArrayList<User> users = new CopyOnWriteArrayList<User>();
 
     public ChatServer (int port) throws IOException{
         this.port=port;
@@ -37,6 +34,7 @@ class SocketHandler implements Runnable {
     private Socket connect;
     private ObjectInputStream input;
     private ObjectOutputStream output;
+    private Controller controler;
 
     public SocketHandler (Socket connect) throws IOException {
         this.connect=connect;
@@ -51,10 +49,11 @@ class SocketHandler implements Runnable {
     }
 
     public void run()  {
-        while (!connect.isClosed()){
+        if (!connect.isClosed()){
+            controler = new Controller();
             try {
                 CommandContainer command = (CommandContainer) input.readObject();
-                System.out.println(command.getServerinfo());
+                CommandContainer answer = controler.handler(command);
             }
             catch(IOException ex){
                 close();
@@ -75,4 +74,14 @@ class SocketHandler implements Runnable {
         }
     }
 
+    protected void send(CommandContainer container){
+        if (!connect.isClosed()){
+            try {
+                output.writeObject(container);
+            } catch (IOException ex){
+                ex.printStackTrace();
+            }
+
+        }
+    }
 }
