@@ -5,11 +5,20 @@ import java.util.Date;
 public class Client {
     private String name;
     private boolean status; //реализовтаь при сохранении агентов и юзеров
+    private SocketHandler recipient;
 
     protected Client(){}
 
     public Client(String name){
         this.name=name;
+    }
+
+    public SocketHandler getRecipient() {
+        return recipient;
+    }
+
+    public void setRecipient(SocketHandler recipient) {
+        this.recipient = recipient;
     }
 
     public String getName() {

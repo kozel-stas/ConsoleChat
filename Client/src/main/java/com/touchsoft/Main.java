@@ -6,11 +6,14 @@ import java.net.Socket;
 public class Main {
     public static void main(String[] args) throws IOException {
         Socket connect = new Socket("localhost",8080);
-        DataOutputStream output=new DataOutputStream(connect.getOutputStream());
+        ObjectOutputStream output=new ObjectOutputStream(connect.getOutputStream());
         DataInputStream in=new DataInputStream(connect.getInputStream());
-        output.writeUTF("lox");
+        CommandContainer a=new CommandContainer("/startter");
+        CommandContainer b=new CommandContainer("/str");
+        output.writeObject(a);
         output.flush();
-        in.readUTF();
+        output.writeObject(b);
+        output.flush();
         connect.close();
     }
 }

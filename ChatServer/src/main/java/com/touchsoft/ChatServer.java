@@ -31,36 +31,48 @@ public class ChatServer {
             }
         }
     }
+}
 
-    class SocketHandler implements Runnable {
-        private Socket connect;
-        private DataInputStream input;
-        private DataOutputStream output;
+class SocketHandler implements Runnable {
+    private Socket connect;
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
 
-        public SocketHandler (Socket connect) throws IOException {
-            this.connect=connect;
-            input = new DataInputStream(connect.getInputStream());
-            output =new DataOutputStream(connect.getOutputStream());
-        }
+    public SocketHandler (Socket connect) throws IOException {
+        this.connect=connect;
+        input = new ObjectInputStream(connect.getInputStream());
+        output =new ObjectOutputStream(connect.getOutputStream());
+    }
 
-        public void setConnect(Socket connect) throws IOException  {
-            this.connect = connect;
-            input = new DataInputStream(connect.getInputStream());
-            output =new DataOutputStream(connect.getOutputStream());
-        }
+    public void setConnect(Socket connect) throws IOException  {
+        this.connect = connect;
+        input = new ObjectInputStream(connect.getInputStream());
+        output =new ObjectOutputStream(connect.getOutputStream());
+    }
 
-        public void run()  {
-            while (!connect.isClosed()){
-                try {
-                    String line = input.readUTF();
-                    System.out.println(line);
-                }
-                catch (IOException e){
-                    e.printStackTrace();
-                }
+    public void run()  {
+        while (!connect.isClosed()){
+            try {
+                CommandContainer command = (CommandContainer) input.readObject();
+                System.out.println(command.getServerinfo());
+            }
+            catch(IOException ex){
+                close();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
         }
     }
 
+    private void close(){
+        if(!connect.isClosed()){
+            try {
+                connect.close();
+            }
+            catch (IOException ex){
+                ex.printStackTrace();
+            }
+        }
+    }
 
 }
