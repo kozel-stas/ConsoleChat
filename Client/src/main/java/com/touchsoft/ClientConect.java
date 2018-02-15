@@ -70,26 +70,25 @@ class inputListener implements Runnable {
 
      private void control(CommandContainer container) {
           if (container == null) return;
-          if (container.getServerinfo() == null && container.getMessage().equals("good") == false) {
+          if (container.getMessage() != null && container.getMessage().equals("good") == false) {
                if (container.isAgent()) System.out.print("Агент ");
                else System.out.print("Клиент ");
                System.out.println(container.getName() + ":   " + container.getMessage());
           } else {
-               if (container.getServerinfo() != null && container.getName().equals("server"))
-                    System.out.println(container.getName() + ":   " + container.getServerinfo());
-               else {
-                    if (container.getMessage().equals("good")) {
-                         ClientConect.isAgent = container.isAgent();
-                         if (container.isAgent() == true) {
-                              ClientConect.client = (Client) new Agent(container.getName());
-                              System.out.println("Вы успешно зарегистрированы как агент "+container.getName());
-                         } else {
-                              ClientConect.client = (Client) new User(container.getName());
-                              System.out.println("Вы успешно зарегистрированы как клиент "+container.getName());
-                         }
+               if (container.getMessage() != null && container.getMessage().equals("good")) {
+                    ClientConect.isAgent = container.isAgent();
+                    if (container.isAgent() == true) {
+                         ClientConect.client = (Client) new Agent(container.getName());
+                         System.out.println("Вы успешно зарегистрированы как агент " + container.getName());
+                    } else {
+                         ClientConect.client = (Client) new User(container.getName());
+                         System.out.println("Вы успешно зарегистрированы как клиент " + container.getName());
+                    }
+               } else {
+                    if (container.getServerinfo() != null && container.getServerinfo().equals("good") == false) {
+                         System.out.println(container.getName() + ":   " + container.getServerinfo());
                     }
                }
           }
      }
-
 }
