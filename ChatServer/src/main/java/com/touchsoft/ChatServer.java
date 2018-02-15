@@ -55,7 +55,6 @@ class SocketHandler implements Runnable {
             try {
                 CommandContainer command = (CommandContainer) input.readObject();
                 send(controler.handler(command));
-
             }
             catch(IOException ex){
                 close();
@@ -68,6 +67,7 @@ class SocketHandler implements Runnable {
     private void close(){
         if(!connect.isClosed()){
             try {
+                controler.close();
                 connect.close();
             }
             catch (IOException ex){
@@ -81,7 +81,8 @@ class SocketHandler implements Runnable {
             try {
                 output.writeObject(container);
             } catch (IOException ex){
-                ex.printStackTrace();
+                if(container.getServerinfo().equals("leave")==false)
+                    ex.printStackTrace();
             }
 
         }

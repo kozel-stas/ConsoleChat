@@ -23,15 +23,25 @@ public class ClientConect {
           this.port=port;
      }
 
+     public void close () throws IOException {
+          if (!connect.isClosed())
+               connect.close();
+     }
+
+     public void exit () throws IOException{
+          close();
+          System.exit(0);
+     }
+
      public void run() throws IOException{
           connect = new Socket(host,port);
           ObjectOutputStream output=new ObjectOutputStream(connect.getOutputStream());
-          Thread demonlistener=new Thread(new inputListener(connect));
+          Thread demonlistener=new Thread(new inputListener(connect,this));
           demonlistener.setDaemon(true);
           demonlistener.start();
           Scanner in=new Scanner(System.in);
           String line;
-          while (true){
+          while (!connect.isClosed()){
                line=in.nextLine();
                if(line!=null && line.equals("")==false){
                     if(line.charAt(0)=='/')
@@ -43,25 +53,31 @@ public class ClientConect {
                          else System.out.println("Зарегистрируйтесь или авторизируйтесь пожалуйста");
                     }
                }
+               if(line.equals("/leave")){ close(); break;}
+               if(line.equals("/exit")) exit();
           }
      }
 }
 
 class inputListener implements Runnable {
-     private Socket connect;
+     private Socket socket;
+     private ClientConect connect;
 
-     public inputListener(Socket connect) {
-          this.connect = connect;
+     public inputListener(Socket socket, ClientConect conect) {
+          this.socket = socket;
+          this.connect = conect;
+
      }
 
      public void run() {
           try {
-               ObjectInputStream input = new ObjectInputStream(connect.getInputStream());
-               while (true) {
+               ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+               while (!socket.isClosed()) {
                     CommandContainer command = (CommandContainer) input.readObject();
                     control(command);
                }
           } catch (IOException exception) {
+               if(!socket.isClosed())
                exception.printStackTrace();
           } catch (ClassNotFoundException ex) {
                ex.printStackTrace();
