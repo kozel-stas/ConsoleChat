@@ -3,8 +3,10 @@ package com.touchsoft;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class ChatServer {
+
     private int port;
     private ServerSocket server;
 
@@ -14,7 +16,7 @@ public class ChatServer {
     }
 
     public ChatServer () throws IOException{
-        this.port=80;
+        this.port=8080;
         server=new ServerSocket(this.port);
     }
 

@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.Timer;
 
 public class ClientConect {
      private String host;
@@ -44,11 +45,16 @@ public class ClientConect {
           while (!connect.isClosed()){
                line=in.nextLine();
                if(line!=null && line.equals("")==false){
-                    if(line.charAt(0)=='/')
+                    if(line.charAt(0)=='/') {
                          output.writeObject(new CommandContainer(line));
+                         if(!isAgent && client!=null)
+                              ((User) client).updateTimeout();
+                    }
                     else{
                          if(client!=null){
                               output.writeObject(new CommandContainer(client.getName(),isAgent,line));
+                              if(!isAgent)
+                                   ((User) client).updateTimeout();
                          }
                          else System.out.println("Зарегистрируйтесь или авторизируйтесь пожалуйста");
                     }
@@ -99,6 +105,7 @@ class inputListener implements Runnable {
                     } else {
                          ClientConect.client = (Client) new User(container.getName());
                          System.out.println("Вы успешно зарегистрированы как клиент " + container.getName());
+                         new Timer().schedule(new timeout((User) ClientConect.client),((User) ClientConect.client).getTimeout(),((User) ClientConect.client).getTimeout());
                     }
                } else {
                     if (container.getServerinfo() != null && container.getServerinfo().equals("good") == false) {

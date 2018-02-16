@@ -19,25 +19,31 @@ public class Client {
     }
 
 class User extends com.touchsoft.Client {
-        private Date date = new Date();
-        private long last_activity;
-        private long timeout = 300000;
+    private long last_activity;
+    private long timeout = 60000*5;
 
-        public User(String name) {
-            super(name);
-            last_activity = date.getTime();
-        }
-
-        public boolean checkTimeout() {
-            if (last_activity + timeout < date.getTime()) return true;
-            else return false;
-        }
-
-        public void updateTimeout() {
-            last_activity = date.getTime();
-        }
-
+    public User(String name) {
+        super(name);
+        Date date=new Date();
+        last_activity = date.getTime();
     }
+
+    public boolean checkTimeout() {
+        Date date=new Date();
+        if (last_activity + timeout < date.getTime()) return true;
+        else return false;
+    }
+
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public void updateTimeout() {
+        Date date=new Date();
+        last_activity = date.getTime();
+    }
+
+}
 
 class Agent extends com.touchsoft.Client {
 

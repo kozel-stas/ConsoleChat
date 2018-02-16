@@ -95,7 +95,7 @@ public class Controller {
                     }
                 }
                 Agent agent = new Agent(line, socket);
-                agents.add(agent);
+                agents.add(0,agent);
                 client = agent;
                 isAgent = true;
                 return new CommandContainer(line, true, "good");
@@ -142,16 +142,24 @@ public class Controller {
             if (isAgent) {
                 if (client.getRecipient() != null)
                     client.getRecipient().getMysocket().send(new CommandContainer("Агент отключился", "server"));//ркоенект нового агента
-                agents.remove(client);
+                    agents.remove(client);
             } else {
-                if (client.getRecipient() != null)
+                if (client.getRecipient() != null) {
                     client.getRecipient().getMysocket().send(new CommandContainer("Клиент отключился", "server"));
-                ((Agent) client.getRecipient()).iteration_number_of_task();
+                    ((Agent) client.getRecipient()).iteration_number_of_task();
+                    for (int i = agents.indexOf(client.getRecipient()); i < agents.size() - 1; i++) {
+                        if (agents.get(i + 1).getNumber_of_task() < ((Agent) client.getRecipient()).getNumber_of_task()) {
+                            agents.remove((Agent) client.getRecipient());
+                            agents.add(i + 1, (Agent) client.getRecipient());
+                        }
+                    }
+                }
                 users.remove(client);
             }
             if (client.getRecipient() != null)
                 client.getRecipient().setRecipient(null);
             client.setRecipient(null);
+            client=null;
         }
     }
 
