@@ -1,0 +1,105 @@
+
+2018-02-17 18:34:19,552 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 18:34:19,555 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 18:34:26,095 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:33] Client connect
+2018-02-17 18:34:53,027 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:33] Client connect
+2018-02-17 18:35:50,953 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:33] Client connect
+2018-02-17 18:38:12,885 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:33] Client connect
+2018-02-17 18:38:57,097 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 18:39:02,376 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 18:39:16,087 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:35] Client connect
+2018-02-17 18:41:01,041 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 18:41:01,045 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 18:41:12,174 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:35] Client connect
+2018-02-17 18:47:41,243 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 18:47:41,245 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 18:47:42,769 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:35] Client connect
+2018-02-17 18:48:14,253 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 18:48:18,864 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 18:48:24,703 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:35] Client connect
+2018-02-17 18:49:14,737 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 18:49:14,740 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 18:49:18,043 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:35] Client connect
+2018-02-17 18:50:00,273 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:35] Client connect
+2018-02-17 18:54:41,416 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 18:54:41,427 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 18:54:44,545 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:35] Client connect
+2018-02-17 18:55:30,670 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 18:55:30,673 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 18:55:36,206 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:35] Client connect
+2018-02-17 18:55:53,512 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null isAgent falsenull
+2018-02-17 18:55:53,512 WARN  [Thread-0] com.touchsoft.ChatServer [Controller.java:67] unknown command null isAgent falsenull
+2018-02-17 18:57:01,088 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 18:57:01,092 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 18:57:02,742 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:35] Client connect
+2018-02-17 18:57:14,376 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null isAgent falsenull
+2018-02-17 18:57:16,341 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:17,655 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:18,492 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:19,076 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:19,551 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:20,030 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:20,518 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:20,951 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:21,426 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:21,895 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:22,351 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:22,805 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:23,270 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 18:57:23,688 INFO  [Thread-0] com.touchsoft.ChatServer [Controller.java:21] request null
+2018-02-17 20:29:41,612 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 20:29:41,615 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 20:29:50,523 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 20:30:53,556 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 20:30:53,559 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 20:30:57,042 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 20:31:03,466 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 20:31:10,565 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 20:31:17,877 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 20:31:20,804 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 20:31:26,481 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 20:31:27,777 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 20:32:42,790 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 20:32:42,794 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 20:32:48,576 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 20:32:54,555 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 20:32:59,807 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 20:33:02,174 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 20:33:15,592 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 20:33:17,584 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 20:33:22,283 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 21:06:52,676 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 21:06:54,879 INFO  [Thread-3] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 21:07:02,373 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 21:07:02,379 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 21:07:04,602 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 21:07:06,198 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 21:07:10,467 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 21:07:16,019 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 21:07:17,369 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 21:07:18,857 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 21:07:21,050 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 21:07:45,775 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 21:07:45,779 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 21:07:51,905 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 21:07:54,052 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 21:07:58,503 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 21:07:59,825 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 21:08:06,496 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 21:08:10,431 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 21:10:30,125 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:18] Start server port=8080
+2018-02-17 21:10:30,131 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:28] Start listener
+2018-02-17 21:10:38,120 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 21:10:51,869 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 21:10:56,057 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 21:11:02,109 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 21:11:03,563 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 21:11:07,504 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 21:11:10,731 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:146] Client abort connection stas
+2018-02-17 21:11:10,731 INFO  [Thread-2] com.touchsoft.ChatServer [Controller.java:149] Client abort connection unknown client
+2018-02-17 21:11:16,072 INFO  [main] com.touchsoft.ChatServer [ChatServer.java:39] Client connect
+2018-02-17 21:11:22,206 INFO  [Thread-3] com.touchsoft.ChatServer [Controller.java:17] request null isAgent falsenull
+2018-02-17 21:11:23,831 INFO  [Thread-3] com.touchsoft.ChatServer [Controller.java:17] request null
+2018-02-17 21:11:34,392 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:146] Client abort connection stas
+2018-02-17 21:11:34,393 INFO  [Thread-1] com.touchsoft.ChatServer [Controller.java:149] Client abort connection unknown client
+2018-02-17 21:11:34,422 INFO  [Thread-3] com.touchsoft.ChatServer [Controller.java:149] Client abort connection unknown client

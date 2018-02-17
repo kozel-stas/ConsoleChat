@@ -29,6 +29,11 @@ public class Client {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return new String(name);
+    }
 }
 
 class User extends Client{

@@ -50,4 +50,13 @@ public class CommandContainer implements Serializable {
     public String getServerinfo() {
         return serverinfo;
     }
+
+    @Override
+    public String toString() {
+        if(command==null){
+            return command;
+        } else {
+            return name+" isAgent "+ isAgent+message;
+        }
+    }
 }
