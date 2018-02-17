@@ -19,6 +19,8 @@ public class findAgentSystem implements Runnable {
                         User user = waitUsers.take();
                         user.setRecipient(agent);
                         agent.setRecipient(user);
+                        user.getMysocket().send(new CommandContainer("К вам подключился агент", "server"));
+                        user.getMysocket().updatewaitAgent();
                     } catch (InterruptedException ex){
                         ex.fillInStackTrace();
                     }

@@ -24,13 +24,8 @@ public class ClientConect {
           this.port=port;
      }
 
-     public void close () throws IOException {
-          if (!connect.isClosed())
-               connect.close();
-     }
-
      public void exit () throws IOException{
-          close();
+          connect.close();
           System.exit(0);
      }
 
@@ -59,8 +54,6 @@ public class ClientConect {
                          else System.out.println("Зарегистрируйтесь или авторизируйтесь пожалуйста");
                     }
                }
-               if(line.equals("/leave")){ close(); break;}
-               if(line.equals("/exit")) exit();
           }
      }
 }
@@ -109,7 +102,13 @@ class inputListener implements Runnable {
                     }
                } else {
                     if (container.getServerinfo() != null && container.getServerinfo().equals("good") == false) {
-                         System.out.println(container.getName() + ":   " + container.getServerinfo());
+                         if(container.getServerinfo().equals("exit"))
+                              try {
+                                   connect.exit();
+                              } catch (IOException ex){
+                                   ex.printStackTrace();
+                              }
+                         else System.out.println(container.getName() + ":   " + container.getServerinfo());
                     }
                }
           }

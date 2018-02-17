@@ -8,9 +8,12 @@ public class Controller {
     private Client client = null;
     private boolean isAgent = false;
     private SocketHandler socket;
+    private boolean waitAgent=false;
+    findAgentSystem module;
 
-    public Controller(SocketHandler socket) {
+    public Controller(SocketHandler socket,findAgentSystem module) {
         this.socket = socket;
+        this.module=module;
     }
 
     public CommandContainer handler(CommandContainer container) {
@@ -26,7 +29,9 @@ public class Controller {
                 return handlerCommand(container);
             } else {
                 if (container.getMessage() != null) {
-                    return handlerMessage(container);
+                    if (waitAgent==true){
+                        return new CommandContainer("Ожидайте, первый освободившийся агент к вам подключится","server");
+                    } else return handlerMessage(container);
                 } else {
                     log.warn("unknown command " + container.toString());
                     return new CommandContainer("Непредвиденная ошибка", "server");
@@ -55,10 +60,24 @@ public class Controller {
         } else {
             line = command.substring(1, command.length());
             if (line.equals("leave")) {
-                return new CommandContainer("leave", "server");
+                if(isAgent && client.getRecipient()!=null){
+                   return new CommandContainer("Нельзя отключаться агентам с клиентом в сети","server");
+                } else {
+                    if(client.getRecipient()!=null) {
+                        leave();
+                        return new CommandContainer("Вы покинули беседу", "server");
+                    }else return new CommandContainer("У вас нет активной беседы","server");
+                }
             } else {
                 if (line.equals("exit")) {
-                    return new CommandContainer("exit", "server");
+                    if(isAgent && client.getRecipient()!=null){
+                        return new CommandContainer("Нельзя отключаться агентам с клиентом в сети","server");
+                    } else {
+                        if(client.getRecipient()!=null) {
+                            leave();
+                            return new CommandContainer("exit", "server");
+                        }else return new CommandContainer("exit", "server");
+                    }
                 } else {
                     log.warn("unknown command " + container.toString());
                     return new CommandContainer("Неверная команда", "server");
@@ -75,11 +94,20 @@ public class Controller {
             } else {
                 if (container.isAgent()) return new CommandContainer("У вас нет подключенных клиентов", "server");
                 else {
-                    log.info("start conversation"+client.toString()+" "+client.getRecipient().toString());
-                    socket.getModule().addWaitUser((User) client);
-                    while (client.getRecipient() == null) ;
-                    client.getRecipient().getMysocket().send(container);
-                    return new CommandContainer("good", "server");
+                    waitAgent=true;
+                    module.addWaitUser((User) client);
+                    try {
+                        Thread.currentThread().sleep(20);//разница в работе потоков
+                    } catch (InterruptedException ex){
+                        Thread.currentThread().interrupt();
+                    }
+                    if(waitAgent==false) {
+                        log.info("start conversation" + client.toString() + " " + client.getRecipient().toString());
+                        client.getRecipient().getMysocket().send(container);
+                        return new CommandContainer("good", "server");
+                    } else {
+                        return new CommandContainer("К сожалению, свободных агентов нет, мы уведовим вас когда вас подключат","server");
+                    }
                 }
             }
         } else return new CommandContainer("Непредвиденная ошибка", "server");
@@ -102,10 +130,10 @@ public class Controller {
     private CommandContainer regAgent(int mark, StringBuilder command) {
         if (command.lastIndexOf(" ") == mark) {
             String line = command.substring(mark + 1, command.length());
-            if (socket.getModule().findAgent(line)) return new CommandContainer("Выбранное имя уже занято", "server");
+            if (module.findAgent(line)) return new CommandContainer("Выбранное имя уже занято", "server");
             Agent agent = new Agent(line, socket);
-            socket.getModule().addAgent(agent);
-            socket.getModule().addWaitAgent(agent);
+            module.addAgent(agent);
+            module.addWaitAgent(agent);
             client = agent;
             isAgent = true;
             return new CommandContainer(line, true, "good");
@@ -117,9 +145,9 @@ public class Controller {
     private CommandContainer regUser(int mark, StringBuilder command) {
         if (command.lastIndexOf(" ") == mark) {
             String line = command.substring(mark + 1, command.length());
-            if (socket.getModule().findUser(line)) return new CommandContainer("Выбранное имя уже занято", "server");
+            if (module.findUser(line)) return new CommandContainer("Выбранное имя уже занято", "server");
             User user = new User(line, socket);
-            socket.getModule().addUser(user);
+            module.addUser(user);
             client = user;
             return new CommandContainer(line, false, "good");
         } else {
@@ -127,12 +155,17 @@ public class Controller {
         }
     }
 
+    public void updatewaitAgent(){
+        waitAgent=false;
+    }
+
     public void leave() {
         if (client != null) {
             if (isAgent) {
-                if (client.getRecipient() != null)
-                    client.getRecipient().getMysocket().send(new CommandContainer("Агент отключился", "server"));//ркоенект нового агента
-                client.getRecipient().setRecipient(null);
+                if (client.getRecipient() != null) {
+                    client.getRecipient().getMysocket().send(new CommandContainer("Агент отключился", "server"));
+                    client.getRecipient().setRecipient(null);
+                }
                 socket.getModule().removeAgent((Agent) client);
                 socket.getModule().addWaitUser((User) client.getRecipient());
             } else {
@@ -150,7 +183,6 @@ public class Controller {
             }
             client.setRecipient(null);
             log.info("Client abort connection unknown client");
-            client = null;
         }
     }
 

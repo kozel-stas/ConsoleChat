@@ -55,7 +55,7 @@ class SocketHandler implements Runnable {
         input = new ObjectInputStream(connect.getInputStream());
         output =new ObjectOutputStream(connect.getOutputStream());
         this.module=module;
-        controler = new Controller(this);
+        controler = new Controller(this,module);
     }
 
     public void run()  {
@@ -70,6 +70,10 @@ class SocketHandler implements Runnable {
                 log.error("Don't find class CommandContainer",e);
             }
         }
+    }
+
+    public void updatewaitAgent(){
+        controler.updatewaitAgent();
     }
 
     public findAgentSystem getModule() {
