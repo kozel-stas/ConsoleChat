@@ -5,7 +5,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class ChatServer {
     private Logger log=LoggerFactory.getLogger(ChatServer.class);
@@ -30,12 +33,14 @@ public class ChatServer {
         Thread moduleThread= new Thread(module);
         moduleThread.setDaemon(true);
         moduleThread.start();
+        ThreadPoolExecutor executor =new ThreadPoolExecutor(2,512,10, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(512));
         while (true) {
             Socket connect = server.accept();
             if (connect!=null){
                 SocketHandler client = new SocketHandler(connect,module);
-                Thread thread = new Thread(client);
-                thread.start();
+                executor.execute(client);
+//                Thread thread = new Thread(client);
+//                thread.start();
                 log.info("Client connect",client);
             }
         }

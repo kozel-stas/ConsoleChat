@@ -164,26 +164,22 @@ public class Controller {
             if (isAgent) {
                 if (client.getRecipient() != null) {
                     client.getRecipient().getMysocket().send(new CommandContainer("Агент отключился", "server"));
+                    socket.getModule().addWaitUser((User) client.getRecipient());
                     client.getRecipient().setRecipient(null);
                 }
                 socket.getModule().removeAgent((Agent) client);
-                socket.getModule().addWaitUser((User) client.getRecipient());
             } else {
                 if (client.getRecipient() != null) {
                     client.getRecipient().getMysocket().send(new CommandContainer("Клиент отключился", "server"));
+                    socket.getModule().addWaitAgent((Agent) client.getRecipient());
                     client.getRecipient().setRecipient(null);
                     ((Agent) client.getRecipient()).iteration_number_of_task();
-                    socket.getModule().addWaitAgent((Agent) client.getRecipient());
                 }
                 socket.getModule().removeUser((User) client);
             }
-            if (client.getRecipient() != null) {
-                client.getRecipient().setRecipient(null);
-                log.info("Client abort connection " + client.toString());
-            }
+            log.info("Client abort connection " + client.toString());
             client.setRecipient(null);
-            log.info("Client abort connection unknown client");
-        }
+        } else log.info("Client abort connection unknown client");
     }
 
 }
