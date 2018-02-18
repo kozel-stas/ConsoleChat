@@ -1,10 +1,9 @@
 package com.touchsoft;
 
 import java.util.Date;
-
+//можно не реализовывать классы юзера и агента, однако для расширяемости можно сделать
 public class Client {
     private String name;
-    private boolean status; //реализовтаь при сохранении агентов и юзеров
     private Client recipient;
     private SocketHandler mysocket;
     protected Client(){}

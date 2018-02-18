@@ -2,18 +2,16 @@ package com.touchsoft;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+//класс, отвечающий за обработку сообщений.
 public class Controller {
     private Logger log = LoggerFactory.getLogger(ChatServer.class);
     private Client client = null;
     private boolean isAgent = false;
     private SocketHandler socket;
     private boolean waitAgent=false;
-    findAgentSystem module;
 
-    public Controller(SocketHandler socket,findAgentSystem module) {
+    public Controller(SocketHandler socket) {
         this.socket = socket;
-        this.module=module;
     }
 
     public CommandContainer handler(CommandContainer container) {
@@ -38,7 +36,7 @@ public class Controller {
                 }
             }
         }
-    }
+    }//основной обработчик
 
     private CommandContainer handlerCommand(CommandContainer container) {
         int mark = -1;
@@ -84,7 +82,7 @@ public class Controller {
                 }
             }
         }
-    }
+    }//обработчик команд
 
     private CommandContainer handlerMessage(CommandContainer container) {
         if (client != null) {
@@ -95,7 +93,7 @@ public class Controller {
                 if (container.isAgent()) return new CommandContainer("У вас нет подключенных клиентов", "server");
                 else {
                     waitAgent=true;
-                    module.addWaitUser((User) client);
+                    findAgentSystem.addWaitUser((User) client);
                     try {
                         Thread.currentThread().sleep(20);//разница в работе потоков
                     } catch (InterruptedException ex){
@@ -111,75 +109,77 @@ public class Controller {
                 }
             }
         } else return new CommandContainer("Непредвиденная ошибка", "server");
-    }
+    }//сообщений
 
     private CommandContainer register(String line) {
         StringBuilder command = new StringBuilder(line);
         int mark = command.indexOf(" ");
-        if (command.substring(0, mark).equals("agent")) {
-            return regAgent(mark, command);
-        } else {
-            if (command.substring(0, mark).equals("client")) {
-                return regUser(mark, command);
+        if(mark!=-1) {
+            if (command.substring(0, mark).equals("agent")) {
+                return regAgent(mark, command);
             } else {
-                return new CommandContainer("Неверно введен тип пользователя", "server");
+                if (command.substring(0, mark).equals("client")) {
+                    return regUser(mark, command);
+                } else {
+                    return new CommandContainer("Неверно введен тип пользователя", "server");
+                }
             }
-        }
-    }
+        } else return new CommandContainer("Неверная команда", "server");
+    }//регистрация
 
     private CommandContainer regAgent(int mark, StringBuilder command) {
         if (command.lastIndexOf(" ") == mark) {
             String line = command.substring(mark + 1, command.length());
-            if (module.findAgent(line)) return new CommandContainer("Выбранное имя уже занято", "server");
+            if (findAgentSystem.findAgent(line)) return new CommandContainer("Выбранное имя уже занято", "server");
             Agent agent = new Agent(line, socket);
-            module.addAgent(agent);
-            module.addWaitAgent(agent);
+            findAgentSystem.addAgent(agent);
+            findAgentSystem.addWaitAgent(agent);
             client = agent;
             isAgent = true;
             return new CommandContainer(line, true, "good");
         } else {
             return new CommandContainer("Недопустисые символы в имени", "server");
         }
-    }
+    }//регистрация агента
 
     private CommandContainer regUser(int mark, StringBuilder command) {
         if (command.lastIndexOf(" ") == mark) {
             String line = command.substring(mark + 1, command.length());
-            if (module.findUser(line)) return new CommandContainer("Выбранное имя уже занято", "server");
+            if (findAgentSystem.findUser(line)) return new CommandContainer("Выбранное имя уже занято", "server");
             User user = new User(line, socket);
-            module.addUser(user);
+            findAgentSystem.addUser(user);
             client = user;
             return new CommandContainer(line, false, "good");
         } else {
             return new CommandContainer("Недопустисые символы в имени", "server");
         }
-    }
+    }//регистрация клиента
 
     public void updatewaitAgent(){
         waitAgent=false;
-    }
+    }//для отелючения обработки только сообщений(не команд) при отсутствии агента
 
     public void leave() {
         if (client != null) {
             if (isAgent) {
                 if (client.getRecipient() != null) {
                     client.getRecipient().getMysocket().send(new CommandContainer("Агент отключился", "server"));
-                    socket.getModule().addWaitUser((User) client.getRecipient());
+                    findAgentSystem.addWaitUser((User) client.getRecipient());
                     client.getRecipient().setRecipient(null);
                 }
-                socket.getModule().removeAgent((Agent) client);
+                findAgentSystem.removeAgent((Agent) client);
             } else {
                 if (client.getRecipient() != null) {
                     client.getRecipient().getMysocket().send(new CommandContainer("Клиент отключился", "server"));
-                    socket.getModule().addWaitAgent((Agent) client.getRecipient());
+                    findAgentSystem.addWaitAgent((Agent) client.getRecipient());
                     client.getRecipient().setRecipient(null);
                     ((Agent) client.getRecipient()).iteration_number_of_task();
                 }
-                socket.getModule().removeUser((User) client);
+                findAgentSystem.removeUser((User) client);
             }
             log.info("Client abort connection " + client.toString());
             client.setRecipient(null);
         } else log.info("Client abort connection unknown client");
-    }
+    }//процесс корректного закрытия
 
 }
