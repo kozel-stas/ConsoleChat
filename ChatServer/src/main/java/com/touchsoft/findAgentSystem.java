@@ -4,30 +4,43 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 // класс реализующий память и потстоянное расперделение агентов и клиентов
 // Статическое для меньшего количества синхронизированных методов
-public class findAgentSystem implements Runnable {
-    private static   ArrayBlockingQueue<Agent> waitAgents = new ArrayBlockingQueue(512);
-    private static   ArrayBlockingQueue<User> waitUsers=new ArrayBlockingQueue<User>(512);
-    private static CopyOnWriteArrayList<User> users =new CopyOnWriteArrayList<User>();
-    private static CopyOnWriteArrayList<Agent> agents =new CopyOnWriteArrayList<Agent>();
+public class findAgentSystem {
+    private static   ArrayBlockingQueue<Client> waitAgents = new ArrayBlockingQueue(512);
+    private static   ArrayBlockingQueue<Client> waitUsers=new ArrayBlockingQueue(512);
+    private static CopyOnWriteArrayList<Client> users =new CopyOnWriteArrayList();
+    private static CopyOnWriteArrayList<Client> agents =new CopyOnWriteArrayList();
 
-    @Override
-    public void run() {
-        while (true){
-            if(waitAgents.size()>0){
-                if(waitUsers.size()>0){
-                    try {
-                        Agent agent = waitAgents.take();
-                        User user = waitUsers.take();
-                        user.setRecipient(agent);
-                        agent.setRecipient(user);
-                        user.getMysocket().send(new CommandContainer("К вам подключился агент", "server"));
-                        user.getMysocket().updatewaitAgent();
-                    } catch (InterruptedException ex){
-                        ex.fillInStackTrace();
-                    }
+    public static synchronized boolean findSystem (Client client){
+        try {
+            if (client.isAgent()) {
+                if (waitUsers.size() > 0) {
+                    Client user = waitUsers.take();
+                    user.setRecipient(client);
+                    client.setRecipient(user);
+                    user.getMysocket().notWaitAgent();
+                    user.getMysocket().send(new CommandContainer("К вам подключился агент " + client.getName(), "server"));
+                    client.getMysocket().send(new CommandContainer("Вы подключены к клиенту " + user.getName(), "server"));
+                    return true;
+                } else {
+                    waitAgents.add(client);
+                    return false;
+                }
+            } else {
+                if (waitAgents.size() > 0) {
+                    Client agent = waitAgents.take();
+                    agent.setRecipient(client);
+                    client.setRecipient(agent);
+                    client.getMysocket().notWaitAgent();
+                    client.getMysocket().send(new CommandContainer("К вам подключился агент " + agent.getName(), "server"));
+                    agent.getMysocket().send(new CommandContainer("Вы подключены к клиенту " + client.getName(), "server"));
+                    return true;
+                } else {
+                    client.getMysocket().waitAgent();
+                    waitUsers.add(client);
+                    return false;
                 }
             }
-        }
+        } catch (InterruptedException ex) {ex.printStackTrace(); return false;}
     }
 
     public static boolean findUser (String name){
@@ -42,37 +55,23 @@ public class findAgentSystem implements Runnable {
         return false;
     }
 
-    public static void addUser(User user){
+    public static void addUser(Client user){
         users.add(user);
     }
 
-    public static void addAgent(Agent agent){
+    public static void addAgent(Client agent){
         agents.add(agent);
     }
 
-    public static void addWaitUser(User user){
-        try {
-            waitUsers.put(user);
-        }  catch (InterruptedException ex){
-            ex.fillInStackTrace();
-        }
-    }
-
-    public static void addWaitAgent(Agent agent){
-        try {
-            waitAgents.put(agent);
-        }  catch (InterruptedException ex){
-            ex.fillInStackTrace();
-        }
-    }
-
-    public static void removeAgent(Agent agent){
+    public static void removeAgent(Client agent){
         waitAgents.remove(agent);
         agents.remove(agent);
     }
 
-    public static void removeUser(User user){
+    public static void removeUser(Client user){
         waitUsers.remove(user);
         users.remove(user);
     }
+
+
 }
