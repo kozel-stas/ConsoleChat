@@ -1,55 +1,34 @@
 package com.touchsoft;
 
-import java.util.Date;
-
 public class Client {
-        private String name;
-        private boolean status; //реализовтаь при сохранении агентов и юзеров
+    private String name;
+    private Client recipient;
+    private boolean isAgent=false;
+    protected Client(){}
 
-        protected Client() {
-        }
-
-        public Client(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
+    public Client(String name,boolean isAgent){
+        this.isAgent=isAgent;
+        this.name=name;
     }
 
-class User extends com.touchsoft.Client {
-    private long last_activity;
-    private long timeout = 60000*5;
-
-    public User(String name) {
-        super(name);
-        Date date=new Date();
-        last_activity = date.getTime();
+    public boolean isAgent() {
+        return isAgent;
     }
 
-    public boolean checkTimeout() {
-        Date date=new Date();
-        if (last_activity + timeout < date.getTime()) return true;
-        else return false;
+    public Client getRecipient() {
+        return recipient;
     }
 
-    public long getTimeout() {
-        return timeout;
+    public void setRecipient(Client recipient) {
+        this.recipient = recipient;
     }
 
-    public void updateTimeout() {
-        Date date=new Date();
-        last_activity = date.getTime();
+    public String getName() {
+        return name;
     }
 
+    @Override
+    public String toString() {
+        return new String(name) +" isAgent = "+isAgent;
+    }
 }
-
-class Agent extends com.touchsoft.Client {
-
-        public Agent(String name) {
-            super(name);
-        }
-}
-
-

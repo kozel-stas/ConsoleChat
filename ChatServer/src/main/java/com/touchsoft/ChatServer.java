@@ -3,8 +3,18 @@ package com.touchsoft;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+<<<<<<< HEAD
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+=======
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.google.gson.*;
+>>>>>>> test
 
 public class ChatServer {
     private Logger log=LoggerFactory.getLogger(ChatServer.class);
@@ -26,20 +36,32 @@ public class ChatServer {
     public void run() throws IOException{
         //ловит клиентов
         log.info("Start listener");
+<<<<<<< HEAD
         //ThreadPoolExecutor executor =new ThreadPoolExecutor(3,512,10, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(512));
+=======
+        ThreadPoolExecutor executor =new ThreadPoolExecutor(512,512,10, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(512));
+>>>>>>> test
         while (true) {
             Socket connect = server.accept();
             if (connect!=null){
                 SocketHandler client = new SocketHandler(connect);
+<<<<<<< HEAD
                 // executor.execute(client);
                 Thread thread = new Thread(client);
                 thread.start();
                 log.info("Client connect",client);
+=======
+                executor.execute(client);
+//                Thread thread = new Thread(client);
+//                thread.start();
+                log.info("new client connect",client);
+>>>>>>> test
             }
         }
     }
 }
 
+<<<<<<< HEAD
 class SocketHandler implements Runnable {
     private Logger log=LoggerFactory.getLogger(SocketHandler.class);
     private Socket connect;
@@ -104,3 +126,5 @@ class SocketHandler implements Runnable {
         }
     }
 }
+=======
+>>>>>>> test
