@@ -1,8 +1,6 @@
 package com.touchsoft;
 
-import java.io.Serializable;
-
-public class CommandContainer implements Serializable {
+public class CommandContainer {
     private String name;
     private boolean isAgent;
     private String command;

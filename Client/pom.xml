@@ -7,10 +7,16 @@
     <groupId>com.touchsoft</groupId>
     <artifactId>Client</artifactId>
     <version>0.6</version>
-    <properties>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
-    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.code.Gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.7</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -36,5 +42,8 @@
             </plugin>
         </plugins>
     </build>
-
+    <properties>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+    </properties>
 </project>
