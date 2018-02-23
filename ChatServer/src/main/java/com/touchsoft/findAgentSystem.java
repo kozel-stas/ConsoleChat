@@ -1,15 +1,34 @@
 package com.touchsoft;
 
+import java.sql.*;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 // класс реализующий память и потстоянное расперделение агентов и клиентов
 // Статическое для меньшего количества синхронизированных методов
 public class findAgentSystem {
+    private static  final String url = "jdbc:derby:memory:Mydb";
+    private static String user = "root";
+    private static String password = "root";
+    private static Connection con;
+    private static Statement stmt;
     private static ConcurrentLinkedQueue<Client> waitAgents = new ConcurrentLinkedQueue<>();
     private static ConcurrentLinkedQueue<Client> waitUsers=new ConcurrentLinkedQueue<>();
     private static CopyOnWriteArrayList<Client> users =new CopyOnWriteArrayList();
     private static CopyOnWriteArrayList<Client> agents =new CopyOnWriteArrayList();
+    public static void testconnect(){
+        try {
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            con = DriverManager.getConnection(url, user, password);
+            stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT name FROM agent");
+            System.out.println(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static synchronized boolean findSystem (Client client) {
         if (client.isAgent()) {

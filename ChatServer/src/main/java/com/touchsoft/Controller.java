@@ -49,7 +49,7 @@ public class Controller {
             if (line.equals("register")) {
                 register(command.substring(mark + 1, command.length()));
             } else {
-                if (line.equals("authorization")) {
+                if (line.equals("login")) {
                     socket.send(new CommandContainer("Команда в разработке", "server"));// сделать если буду реализовывать сохранение агентов
                 } else {
                     log.warn("unknown command " + container.toString());
@@ -65,7 +65,10 @@ public class Controller {
                     if (client != null && client.getRecipient() != null) {
                         leave();
                         socket.send(new CommandContainer("Вы покинули беседу", "server"));
-                    } else socket.send(new CommandContainer("У вас нет активной беседы", "server"));
+                    } else {
+                        if(client==null) socket.send(new CommandContainer("Вы должны авторизироваться или зарегистрироваться", "server"));
+                        else socket.send(new CommandContainer("У вас нет активной беседы", "server"));
+                    }
                 }
             } else {
                 if (line.equals("exit")) {
@@ -87,7 +90,7 @@ public class Controller {
                 client.getRecipient().getMysocket().send(container);
                 socket.send( new CommandContainer("good", "server"));
             } else {
-                if (container.isAgent()) socket.send( new CommandContainer("У вас нет подключенных клиентов", "server"));
+                if (client.isAgent()) socket.send( new CommandContainer("У вас нет подключенных клиентов", "server"));
                 else {
                     if (waitAgent == true) {
                         bufferedMessage.add(container);
@@ -139,7 +142,7 @@ public class Controller {
             }
             client = agent;
         } else {
-            socket.send(new CommandContainer("Недопустисые символы в имени", "server"));
+            socket.send(new CommandContainer("Недопустимые символы в имени", "server"));
         }
     }//регистрация агента
 
@@ -153,7 +156,7 @@ public class Controller {
             client = user;
             socket.send( new CommandContainer(line, false, "good"));
         } else {
-            socket.send( new CommandContainer("Недопустисые символы в имени", "server"));
+            socket.send( new CommandContainer("Недопустимые символы в имени", "server"));
         }
     }//регистрация клиента
 

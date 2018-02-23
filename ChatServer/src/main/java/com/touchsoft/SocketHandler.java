@@ -27,7 +27,7 @@ public class SocketHandler implements Runnable {
         while (!connect.isClosed()){
             try {
                 command = json.fromJson(input.readLine(),CommandContainer.class);
-                if(command==null) close();
+                if(command==null) {close(); break;}
                 else controller.handler(command);
             }
             catch(IOException ex) {
