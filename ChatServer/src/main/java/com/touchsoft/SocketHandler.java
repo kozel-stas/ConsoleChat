@@ -32,7 +32,7 @@ public class SocketHandler implements Runnable {
             }
             catch(IOException ex) {
                 close();
-                log.error("Error reading command",ex);
+                log.warn("Error reading command",ex);
             }
         }
     }
@@ -61,7 +61,7 @@ public class SocketHandler implements Runnable {
         }
     }
 
-    synchronized protected void send(CommandContainer container){
+    synchronized public void send(CommandContainer container){
         if (!connect.isClosed()){
             try {
                 output.write(json.toJson(container));

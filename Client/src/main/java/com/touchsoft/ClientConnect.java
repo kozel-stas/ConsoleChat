@@ -92,7 +92,7 @@ class inputListener implements Runnable {
 
      private void control(CommandContainer container) {
           if (container == null) return;
-          if (container.getMessage() != null && container.getMessage().equals("good") == false) {
+          if (container.getMessage() != null && container.getMessage().equals("good") == false && container.getMessage().equals("goodLogin")==false) {
                if (container.isAgent()) System.out.print("Агент ");
                else System.out.print("Клиент ");
                System.out.println(container.getName() + ":   " + container.getMessage());
@@ -105,9 +105,18 @@ class inputListener implements Runnable {
                          System.out.println("Вы успешно зарегистрированы как клиент " + container.getName());
                     }
                } else {
-                    if (container.getServerinfo() != null && container.getServerinfo().equals("good") == false) {
-                         if (container.getServerinfo().equals("exit")) connect.exit();
-                         else System.out.println(container.getName() + ":   " + container.getServerinfo());
+                    if (container.getMessage() != null && container.getMessage().equals("goodLogin")) {
+                         ClientConnect.client = new Client(container.getName(), container.isAgent());
+                         if (container.isAgent() == true) {
+                              System.out.println("Вы успешно авторизированы как агент " + container.getName());
+                         } else {
+                              System.out.println("Вы успешно авторизированы как клиент " + container.getName());
+                         }
+                    } else {
+                         if (container.getServerinfo() != null && container.getServerinfo().equals("good") == false) {
+                              if (container.getServerinfo().equals("exit")) connect.exit();
+                              else System.out.println(container.getName() + ":   " + container.getServerinfo());
+                         }
                     }
                }
           }

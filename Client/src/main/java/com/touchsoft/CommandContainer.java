@@ -51,10 +51,11 @@ public class CommandContainer {
 
     @Override
     public String toString() {
-        if(command==null){
+        if(command!=null){
             return command;
         } else {
-            return name+" isAgent "+ isAgent+message;
+            if(serverinfo==null) return name+" isAgent "+ isAgent+" "+message;
+            else return name+" "+serverinfo;
         }
     }
 }
