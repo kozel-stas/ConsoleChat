@@ -33,6 +33,7 @@ public class ChatServer {
     public void run() throws IOException{
         //ловит клиентов
         log.info("Start listener");
+        findAgentSystem.createDatabase();
         ThreadPoolExecutor executor =new ThreadPoolExecutor(512,512,10, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(512));
         while (true) {
             Socket connect = server.accept();

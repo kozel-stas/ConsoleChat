@@ -3,6 +3,7 @@ package com.touchsoft.test;
 import com.google.gson.Gson;
 import com.touchsoft.CommandContainer;
 import com.touchsoft.SocketHandler;
+import com.touchsoft.findAgentSystem;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,6 +23,7 @@ public class SocketHandlerandControllerUnitTest {
 
     @Before
     public void init() throws IOException{
+        findAgentSystem.createDatabase();
         outputStream=new ByteArrayOutputStream();
         socket=mock(Socket.class);
         when(socket.getOutputStream()).thenReturn(outputStream);
@@ -31,6 +33,7 @@ public class SocketHandlerandControllerUnitTest {
     public void clean() throws IOException{
         outputStream.close();
         inputStream.close();
+        findAgentSystem.dropDatabase();
     }
 
     @Test

@@ -7,6 +7,8 @@ public class Client {
     private boolean isAgent=false;
     protected Client(){}
 
+    public Client(String name){this.name=name;}
+
     public Client(String name,SocketHandler mysocket,boolean isAgent){
         this.isAgent=isAgent;
         this.name=name;

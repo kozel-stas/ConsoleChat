@@ -45,17 +45,19 @@ public class Controller {
         mark = command.indexOf(" ");
         String line;
         if (mark != -1) {
-            line = command.substring(1, mark);
-            if (line.equals("register")) {
-                register(command.substring(mark + 1, command.length()));
-            } else {
-                if (line.equals("login")) {
-                    socket.send(new CommandContainer("Команда в разработке", "server"));// сделать если буду реализовывать сохранение агентов
+            if(client==null) {
+                line = command.substring(1, mark);
+                if (line.equals("register")) {
+                    register(command.substring(mark + 1, command.length()));
                 } else {
-                    log.warn("unknown command " + container.toString());
-                    socket.send(new CommandContainer("Неверная команда", "server"));
+                    if (line.equals("login")) {
+                        login(command.substring(mark + 1, command.length()));
+                    } else {
+                        log.warn("unknown command " + container.toString());
+                        socket.send(new CommandContainer("Неверная команда", "server"));
+                    }
                 }
-            }
+            } else socket.send(new CommandContainer("Вы уже зарегистрировались или авторизовались","server"));
         } else {
             line = command.substring(1, command.length());
             if (line.equals("leave")) {
@@ -66,7 +68,8 @@ public class Controller {
                         leave();
                         socket.send(new CommandContainer("Вы покинули беседу", "server"));
                     } else {
-                        if(client==null) socket.send(new CommandContainer("Вы должны авторизироваться или зарегистрироваться", "server"));
+                        if (client == null)
+                            socket.send(new CommandContainer("Вы должны авторизироваться или зарегистрироваться", "server"));
                         else socket.send(new CommandContainer("У вас нет активной беседы", "server"));
                     }
                 }
@@ -93,6 +96,7 @@ public class Controller {
                 if (client.isAgent()) socket.send( new CommandContainer("У вас нет подключенных клиентов", "server"));
                 else {
                     if (waitAgent == true) {
+                        if(bufferedMessage==null) bufferedMessage=new ArrayList<>();
                         bufferedMessage.add(container);
                         socket.send(new CommandContainer("Первый освободившийся агент ответит вам","server"));
                     } else {
@@ -110,6 +114,63 @@ public class Controller {
             }
         } else socket.send( new CommandContainer("Непредвиденная ошибка", "server"));
     }//сообщений
+
+    private void login(String line){
+        StringBuilder command = new StringBuilder(line);
+        int mark = command.indexOf(" ");
+        if(mark!=-1) {
+            if (command.substring(0, mark).equals("agent")) {
+                loginAgent(mark,command);
+            } else {
+                if (command.substring(0, mark).equals("client")) {
+                    loginUser(mark,command);
+                } else {
+                    socket.send( new CommandContainer("Неверно введен тип пользователя", "server"));
+                    log.warn("unknown type of user",line);
+                }
+            }
+        } else socket.send( new CommandContainer("Неверная команда", "server"));
+    }
+
+    private void loginUser(int mark,StringBuilder command){
+        if (command.lastIndexOf(" ") == mark) {
+            String line = command.substring(mark + 1, command.length());
+            if (!findAgentSystem.login(line,"Client")){
+                if(findAgentSystem.findUser(line)) {socket.send( new CommandContainer("Клиент с таким именем уже в сети", "server")); return;}
+                socket.send( new CommandContainer("Нет такого зарегистрированного клиента", "server"));
+                return;
+            }
+            Client user = new Client(line, socket,false);
+            findAgentSystem.addUser(user);
+            log.info("Login client",user);
+            client = user;
+            socket.send( new CommandContainer(line, false, "goodLogin"));
+        } else {
+            socket.send( new CommandContainer("Недопустимые символы в имени", "server"));
+        }
+    }
+
+    private void loginAgent(int mark,StringBuilder command){
+        if (command.lastIndexOf(" ") == mark) {
+            String line = command.substring(mark + 1, command.length());
+            if (!findAgentSystem.login(line,"Agent")){
+                if(findAgentSystem.findAgent(line)) {socket.send( new CommandContainer("Клиент с таким именем уже в сети", "server")); return;}
+                socket.send( new CommandContainer("Нет такого зарегистрированного агента", "server"));
+                return;
+            }
+            Client agent = new Client(line, socket,true);
+            findAgentSystem.addAgent(agent);
+            log.info("Login agent",agent);
+            socket.send( new CommandContainer(line, true, "goodLogin"));
+            if(findAgentSystem.findSystem(agent)==true){
+                agent.getRecipient().getMysocket().updateBufferedMessage();
+                log.info("start conversation" + agent.toString() + " " + agent.getRecipient().toString());
+            }
+            client = agent;
+        } else {
+            socket.send( new CommandContainer("Недопустимые символы в имени", "server"));
+        }
+    }
 
     private void register(String line) {
         StringBuilder command = new StringBuilder(line);
@@ -186,7 +247,6 @@ public class Controller {
                         log.info("start conversation" + client.getRecipient().toString() + " " + client.getRecipient().getRecipient().toString());
                     } else {
                         client.getRecipient().getMysocket().send(new CommandContainer("Агент отключился, первый освободившийся агент ответит вам ", "server"));
-                        bufferedMessage=new ArrayList<>();
                         client.getRecipient().setRecipient(null);
                     }
                 }
@@ -207,5 +267,4 @@ public class Controller {
             client.setRecipient(null);
         } else log.info("Client abort connection unknown client");
     }//процесс корректного закрытия
-
 }
