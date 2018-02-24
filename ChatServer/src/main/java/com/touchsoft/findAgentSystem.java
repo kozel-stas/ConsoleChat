@@ -1,17 +1,18 @@
 package com.touchsoft;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-// класс реализующий память и потстоянное расперделение агентов и клиентов
-// Статическое для меньшего количества синхронизированных методов
 public class findAgentSystem {
+    private static Logger log= LoggerFactory.getLogger(com.touchsoft.findAgentSystem.class);
     private static  final String url = "jdbc:derby:memory:ServerChatDB";
     private static Connection connection;
     private static Statement stmt;
-    private static ConcurrentLinkedQueue<Client> waitAgents = new ConcurrentLinkedQueue<>();
-    private static ConcurrentLinkedQueue<Client> waitUsers=new ConcurrentLinkedQueue<>();
+    private static ConcurrentLinkedQueue<Client> waitAgents = new ConcurrentLinkedQueue();
+    private static ConcurrentLinkedQueue<Client> waitUsers=new ConcurrentLinkedQueue();
     private static CopyOnWriteArrayList<Client> users =new CopyOnWriteArrayList();
     private static CopyOnWriteArrayList<Client> agents =new CopyOnWriteArrayList();
 
@@ -25,9 +26,9 @@ public class findAgentSystem {
             String createClientTable="CREATE TABLE Client (id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1,INCREMENT BY 1), name VARCHAR(100) NOT NULL)";
             stmt.executeUpdate(createClientTable);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            log.error("Error when database is starting",e);
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("Error when database is starting",e);
         }
     }
 
@@ -35,7 +36,7 @@ public class findAgentSystem {
         try {
             connection=DriverManager.getConnection(url+";drop=true");
         } catch (SQLException e) {
-
+            log.warn("Drop database",e);
         }
     }
 
@@ -49,7 +50,7 @@ public class findAgentSystem {
             try {
                 stmt.executeUpdate(stringBuilder.toString());
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.warn("Error login",e);
             }
             return true;
         }else {
@@ -66,7 +67,23 @@ public class findAgentSystem {
         try {
             stmt.executeUpdate(stringBuilder.toString());
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn("Error addInDatabase ",e);
+        }
+    }
+
+    private static boolean findInDatabase(String name,String type){
+        StringBuilder stringBuilder=new StringBuilder("SELECT name FROM ");
+        stringBuilder.append(type);
+        stringBuilder.append(" WHERE name='");
+        stringBuilder.append(name);
+        stringBuilder.append("'");
+        try {
+            ResultSet rst=stmt.executeQuery(stringBuilder.toString());
+            if(rst.next()) return true;
+            else return false;
+        } catch (SQLException e) {
+            log.warn("Error findInDatabase",e);
+            return true;
         }
     }
 
@@ -153,5 +170,11 @@ public class findAgentSystem {
         addInDatabase(user,"Client");
     }
 
+    public static void clear(){
+        waitAgents.clear();
+        waitUsers.clear();
+        agents.clear();
+        users.clear();
+    }
 
 }

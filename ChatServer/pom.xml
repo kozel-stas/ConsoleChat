@@ -6,7 +6,7 @@
 
     <groupId>com.touchsoft</groupId>
     <artifactId>ChatServer</artifactId>
-    <version>0.6</version>
+    <version>1.0</version>
 
     <dependencies>
         <dependency>
@@ -71,15 +71,9 @@
 
     </dependencies>
 
-
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
     <build>
         <plugins>
             <plugin>
-
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.3</version>
@@ -90,9 +84,6 @@
                 <executions>
                     <execution>
                         <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
                         <configuration>
                             <transformers>
                                 <transformer
@@ -106,5 +97,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

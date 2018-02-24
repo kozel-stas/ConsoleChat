@@ -96,7 +96,7 @@ public class Controller {
                 if (client.isAgent()) socket.send( new CommandContainer("У вас нет подключенных клиентов", "server"));
                 else {
                     if (waitAgent == true) {
-                        if(bufferedMessage==null) bufferedMessage=new ArrayList<>();
+                        if(bufferedMessage==null) bufferedMessage=new ArrayList();
                         bufferedMessage.add(container);
                         socket.send(new CommandContainer("Первый освободившийся агент ответит вам","server"));
                     } else {

@@ -1,6 +1,5 @@
 package com.touchsoft;
 
-
 import java.io.IOException;
 import java.net.Socket;
 
