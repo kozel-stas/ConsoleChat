@@ -71,34 +71,18 @@ public class findAgentSystem {
         }
     }
 
-    private static boolean findInDatabase(String name,String type){
-        StringBuilder stringBuilder=new StringBuilder("SELECT name FROM ");
+    private static boolean findInDatabase(String name,String type) {
+        StringBuilder stringBuilder = new StringBuilder("SELECT name FROM ");
         stringBuilder.append(type);
         stringBuilder.append(" WHERE name='");
         stringBuilder.append(name);
         stringBuilder.append("'");
         try {
-            ResultSet rst=stmt.executeQuery(stringBuilder.toString());
-            if(rst.next()) return true;
+            ResultSet rst = stmt.executeQuery(stringBuilder.toString());
+            if (rst.next()) return true;
             else return false;
         } catch (SQLException e) {
-            log.warn("Error findInDatabase",e);
-            return true;
-        }
-    }
-
-    private static boolean findInDatabase(String name,String type){
-        StringBuilder stringBuilder=new StringBuilder("SELECT name FROM ");
-        stringBuilder.append(type);
-        stringBuilder.append(" WHERE name='");
-        stringBuilder.append(name);
-        stringBuilder.append("'");
-        try {
-            ResultSet rst=stmt.executeQuery(stringBuilder.toString());
-            if(rst.next()) return true;
-            else return false;
-        } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn("Error findInDatabase", e);
             return true;
         }
     }
