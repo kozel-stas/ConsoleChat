@@ -12,7 +12,6 @@ import org.mockito.stubbing.Answer;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.validateMockitoUsage;
 
 
 public class findSystemTest {
@@ -56,8 +55,8 @@ public class findSystemTest {
         agent=new Client("stas",socketHandlerAgent,true);
         Assert.assertFalse(findAgentSystem.findSystem(agent));
         Assert.assertTrue(findAgentSystem.findSystem(client));
-        Assert.assertEquals(new CommandContainer("Вы подключены к клиенту stas","Server").toString(),answerAgent.toString());
-        Assert.assertEquals(new CommandContainer("К вам подключился агент stas","Server").toString(),answerClient.toString());
+        Assert.assertEquals(new CommandContainer(20,"stas").toString(),answerAgent.toString());
+        Assert.assertEquals(new CommandContainer(19,"stas").toString(),answerClient.toString());
     }
 
     @Test
@@ -78,8 +77,8 @@ public class findSystemTest {
         client = new Client("Stas", socketHandlerClient, false);
         Assert.assertFalse(findAgentSystem.findSystem(client));
         Assert.assertTrue(findAgentSystem.findSystem(agent));
-        Assert.assertEquals(new CommandContainer("Вы подключены к клиенту Stas","Server").toString(),answerAgent.toString());
-        Assert.assertEquals(new CommandContainer("К вам подключился агент Vlad","Server").toString(),answerClient.toString());
+        Assert.assertEquals(new CommandContainer(20,"Stas").toString(),answerAgent.toString());
+        Assert.assertEquals(new CommandContainer(19,"Vlad").toString(),answerClient.toString());
     }
 
     @Test
@@ -92,8 +91,8 @@ public class findSystemTest {
         Assert.assertFalse(findAgentSystem.findSystem(testClient));
         Assert.assertFalse(findAgentSystem.findSystem(testClient1));
         Assert.assertTrue(findAgentSystem.findSystem(agent));
-        Assert.assertEquals(new CommandContainer("Вы подключены к клиенту Stas","Server").toString(),answerAgent.toString());
-        Assert.assertEquals(new CommandContainer("К вам подключился агент Vlad","Server").toString(),answerClient.toString());
+        Assert.assertEquals(new CommandContainer(20,"Stas").toString(),answerAgent.toString());
+        Assert.assertEquals(new CommandContainer(19,"Vlad").toString(),answerClient.toString());
     }
 
     @Test
@@ -106,8 +105,8 @@ public class findSystemTest {
         Assert.assertTrue(findAgentSystem.findSystem(agent))
         ;Assert.assertFalse(findAgentSystem.findSystem(testAgent));
         Assert.assertFalse(findAgentSystem.findSystem(testAgent1));
-        Assert.assertEquals(new CommandContainer("Вы подключены к клиенту Stas","Server").toString(),answerAgent.toString());
-        Assert.assertEquals(new CommandContainer("К вам подключился агент Vlad","Server").toString(),answerClient.toString());
+        Assert.assertEquals(new CommandContainer(20,"Stas").toString(),answerAgent.toString());
+        Assert.assertEquals(new CommandContainer(19,"Vlad").toString(),answerClient.toString());
     }
 
 }

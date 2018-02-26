@@ -94,8 +94,8 @@ public class findAgentSystem {
                 user.setRecipient(client);
                 client.setRecipient(user);
                 user.getMysocket().notWaitAgent();
-                user.getMysocket().send(new CommandContainer("К вам подключился агент " + client.getName(), "server"));
-                client.getMysocket().send(new CommandContainer("Вы подключены к клиенту " + user.getName(), "server"));
+                user.getMysocket().send(new CommandContainer(19 , client.getName()));
+                client.getMysocket().send(new CommandContainer(20 , user.getName()));
                 return true;
             } else {
                 waitAgents.add(client);
@@ -107,8 +107,8 @@ public class findAgentSystem {
                 agent.setRecipient(client);
                 client.setRecipient(agent);
                 client.getMysocket().notWaitAgent();
-                client.getMysocket().send(new CommandContainer("К вам подключился агент " + agent.getName(), "server"));
-                agent.getMysocket().send(new CommandContainer("Вы подключены к клиенту " + client.getName(), "server"));
+                client.getMysocket().send(new CommandContainer(19 , agent.getName()));
+                agent.getMysocket().send(new CommandContainer(20 , client.getName()));
                 return true;
             } else {
                 client.getMysocket().waitAgent();

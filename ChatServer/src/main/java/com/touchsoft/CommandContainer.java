@@ -5,10 +5,10 @@ public class CommandContainer {
     private boolean isAgent;
     private String command;
     private String message;
-    private String serverinfo;
+    private int serverinfo;
 
-    public CommandContainer (String serverinfo, String name){
-        this.name="Server";
+    public CommandContainer (int serverinfo, String name){
+        this.name=name;
         this.isAgent=false;
         this.command=null;
         this.message=null;
@@ -20,13 +20,14 @@ public class CommandContainer {
         this.isAgent=isAgent;
         this.command = null;
         this.message = message;
+        serverinfo=-1;
     }
 
     public CommandContainer (String command) {
         this.isAgent = false;
         this.command = command;
         this.message = null;
-        this.serverinfo = null;
+        this.serverinfo=-1;
     }
 
     public String getName() {
@@ -45,7 +46,7 @@ public class CommandContainer {
         return isAgent;
     }
 
-    public String getServerinfo() {
+    public int getServerinfo() {
         return serverinfo;
     }
 
@@ -54,7 +55,7 @@ public class CommandContainer {
         if(command!=null){
             return command;
         } else {
-            if(serverinfo==null) return name+" isAgent "+ isAgent+" "+message;
+            if(serverinfo==-1) return name+" isAgent "+ isAgent+" "+message;
             else return name+" "+serverinfo;
         }
     }
