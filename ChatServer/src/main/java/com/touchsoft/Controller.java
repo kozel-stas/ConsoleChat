@@ -88,29 +88,27 @@ public class Controller {
     }//обработчик команд
 
     private void handlerMessage(CommandContainer container) {
-        if (client != null) {
-            if (client.getRecipient() != null) {
-                client.getRecipient().getMysocket().send(container);
-            } else {
-                if (client.isAgent()) socket.send( new CommandContainer(8 ,"Server"));
-                else {
-                    if (waitAgent == true) {
-                        if(bufferedMessage==null) bufferedMessage=new ArrayList();
-                        bufferedMessage.add(container);
-                        socket.send(new CommandContainer(7,"Server"));
+        if (client.getRecipient() != null) {
+            client.getRecipient().getMysocket().send(container);
+        } else {
+            if (client.isAgent()) socket.send(new CommandContainer(8, "Server"));
+            else {
+                if (waitAgent == true) {
+                    if (bufferedMessage == null) bufferedMessage = new ArrayList();
+                    bufferedMessage.add(container);
+                    socket.send(new CommandContainer(7, "Server"));
+                } else {
+                    if (findAgentSystem.findSystem(client) == true) {
+                        log.info("start conversation " + client.toString() + " " + client.getRecipient().toString());
+                        client.getRecipient().getMysocket().send(container);
                     } else {
-                        if (findAgentSystem.findSystem(client) == true) {
-                            log.info("start conversation " + client.toString() + " " + client.getRecipient().toString());
-                            client.getRecipient().getMysocket().send(container);
-                        } else {
-                            bufferedMessage = new ArrayList();
-                            bufferedMessage.add(container);
-                            socket.send( new CommandContainer(6, "Server"));
-                        }
+                        bufferedMessage = new ArrayList();
+                        bufferedMessage.add(container);
+                        socket.send(new CommandContainer(6, "Server"));
                     }
                 }
             }
-        } else socket.send( new CommandContainer(1, "Server"));
+        }
     }//сообщений
 
     private void login(String line){

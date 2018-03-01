@@ -17,6 +17,8 @@ public class ChatServer {
     private int port;
     private ServerSocket server;
     private ArrayList<java.lang.String> serverAnswer;
+    private final int numberOfPools=100;
+
     public ChatServer (int port) throws IOException{
         this.port=port;
         server=new ServerSocket(port);
@@ -35,7 +37,7 @@ public class ChatServer {
         //ловит клиентов
         log.info("Start listener");
         findAgentSystem.createDatabase();
-        ThreadPoolExecutor executor =new ThreadPoolExecutor(512,512,10, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(512));
+        ThreadPoolExecutor executor =new ThreadPoolExecutor(numberOfPools,numberOfPools,10, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(512));
         while (true) {
             Socket connect = server.accept();
             if (connect!=null){
