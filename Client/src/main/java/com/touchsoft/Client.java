@@ -3,12 +3,14 @@ package com.touchsoft;
 public class Client {
     private String name;
     private Client recipient;
-    private boolean isAgent=false;
-    protected Client(){}
+    private boolean isAgent = false;
 
-    public Client(String name,boolean isAgent){
-        this.isAgent=isAgent;
-        this.name=name;
+    protected Client() {
+    }
+
+    public Client(String name, boolean isAgent) {
+        this.isAgent = isAgent;
+        this.name = name;
     }
 
     public boolean isAgent() {
@@ -29,6 +31,6 @@ public class Client {
 
     @Override
     public String toString() {
-        return new String(name) +" isAgent = "+isAgent;
+        return new String(name) + " isAgent = " + isAgent;
     }
 }

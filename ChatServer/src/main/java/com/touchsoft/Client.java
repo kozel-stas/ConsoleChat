@@ -4,15 +4,19 @@ public class Client {
     private String name;
     private Client recipient;
     private SocketHandler mysocket;
-    private boolean isAgent=false;
-    protected Client(){}
+    private boolean isAgent = false;
 
-    public Client(String name){this.name=name;}
+    protected Client() {
+    }
 
-    public Client(String name,SocketHandler mysocket,boolean isAgent){
-        this.isAgent=isAgent;
-        this.name=name;
-        this.mysocket=mysocket;
+    public Client(String name) {
+        this.name = name;
+    }
+
+    public Client(String name, SocketHandler mysocket, boolean isAgent) {
+        this.isAgent = isAgent;
+        this.name = name;
+        this.mysocket = mysocket;
     }
 
     public SocketHandler getMysocket() {
@@ -37,6 +41,6 @@ public class Client {
 
     @Override
     public String toString() {
-        return new String(name) +" isAgent = "+isAgent;
+        return new String(name) + " isAgent = " + isAgent;
     }
 }

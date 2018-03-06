@@ -49,7 +49,7 @@ public class ChatServer {
     }
 
     private void config() {
-        final String PATH="ChatServer/src/main/resources/config.txt";
+        final String PATH = "ChatServer/src/main/resources/config.txt";
         serverAnswer = new EnumMap(AnswerCode.class);
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(PATH))))) {
             String line = fileReader.readLine();
@@ -61,9 +61,9 @@ public class ChatServer {
                 line = fileReader.readLine();
             }
         } catch (FileNotFoundException e) {
-            log.error("Config file isn't exist",e);
+            log.error("Config file isn't exist", e);
         } catch (IOException e) {
-            log.error("Problem with input stream with config file",e);
+            log.error("Problem with input stream with config file", e);
         }
     }
 }

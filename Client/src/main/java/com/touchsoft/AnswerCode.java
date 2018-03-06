@@ -29,7 +29,7 @@ public enum AnswerCode {
     AGENT_LEAVE_WAIT_NEW(804),
     NO_AGENT_WAIT(805),
     FIRST_AGENT_ANSWER_YOU(806),
-    CAN_NOT_LEAVE_AGENT_WITH_CLIENT(807),
+    CAN_NOT_LEAVE_AGENT(807),
 
     DONT_HAVE_CLIENT(300);
 
@@ -40,9 +40,9 @@ public enum AnswerCode {
         Value = value;
     }
 
-    public static AnswerCode getEnumByInt(int code){
-        for(AnswerCode answerCode: AnswerCode.values())
-            if(code==answerCode.Value) return answerCode;
+    public static AnswerCode getEnumByInt(int code) {
+        for (AnswerCode answerCode : AnswerCode.values())
+            if (code == answerCode.Value) return answerCode;
         return null;
     }
 }
