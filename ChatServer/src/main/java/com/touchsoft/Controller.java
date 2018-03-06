@@ -158,7 +158,7 @@ public class Controller {
             FindAgentSystem.addAgent(agent);
             log.info("Login agent",agent);
             socket.send( new CommandContainer(line, true, "goodLogin"));
-            if(FindAgentSystem.findSystem(agent)==true){
+            if(FindAgentSystem.findSystem(agent)){
                 agent.getRecipient().getMysocket().updateBufferedMessage();
                 log.info("start conversation" + agent.toString() + " " + agent.getRecipient().toString());
             }
@@ -193,7 +193,7 @@ public class Controller {
             FindAgentSystem.addAgent(agent);
             agent.getMysocket().send(new CommandContainer(line, true, "goodRegister"));
             log.info("register new agent", agent);
-            if(FindAgentSystem.findSystem(agent)==true){
+            if(FindAgentSystem.findSystem(agent)){
                 agent.getRecipient().getMysocket().updateBufferedMessage();
                 log.info("start conversation" + agent.toString() + " " + agent.getRecipient().toString());
             }

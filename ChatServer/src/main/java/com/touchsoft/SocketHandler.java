@@ -15,19 +15,17 @@ public class SocketHandler implements Runnable {
     private BufferedWriter output;
     private Controller controller;
     private Gson json;
-    private Map<AnswerCode,String> serverAnswer;
 
-    public SocketHandler (Socket connect,Map<AnswerCode,String> serverAnswer) throws IOException {
+    public SocketHandler (Socket connect) throws IOException {
         this.connect=connect;
         input = new BufferedReader(new InputStreamReader(connect.getInputStream(), "UTF-8"));
         output = new BufferedWriter(new OutputStreamWriter(connect.getOutputStream(), "UTF-8"));
         controller = new Controller(this);
         json =new Gson();
-        this.serverAnswer=serverAnswer;
     }
     //прием сообщений и корректное закрытие и синхронизированный send;
     public void run()  {
-        CommandContainer command=null;
+        CommandContainer command;
         while (!connect.isClosed()){
             try {
                 command = json.fromJson(input.readLine(),CommandContainer.class);

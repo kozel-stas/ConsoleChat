@@ -1,11 +1,15 @@
 package com.touchsoft;
 
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
 
 public class ClientConnect {
+     private Logger log = LoggerFactory.getLogger(ClientConnect.class);
      private String host;
      private int port;
      private Socket connect;
@@ -28,6 +32,7 @@ public class ClientConnect {
           try {
                connect.close();
           } catch (IOException ex){
+               log.error("Exception with close",ex);
                ex.printStackTrace();
           } finally {
                System.exit(0);
@@ -36,16 +41,20 @@ public class ClientConnect {
 
      public void run() {
           try {
+               log.info("Connect port "+port+" host "+host);
                connect = new Socket(host, port);
+               log.info("Connect success");
                BufferedWriter output = new BufferedWriter(new OutputStreamWriter(connect.getOutputStream(), "UTF-8"));
-               Thread demonlistener = new Thread(new InputListener(connect, this));
-               demonlistener.setDaemon(true);
-               demonlistener.start();
+               Thread demonListener = new Thread(new InputListener(connect, this));
+               demonListener.setDaemon(true);
+               demonListener.start();
+               log.info("Start demonListener");
                Scanner in = new Scanner(System.in);
                String line;
                System.out.println("=========================================\n                Command                \n /register agent|client \"name\"\n /login agent|client \"name\"\n /exit\n /leave");
                while (!connect.isClosed()) {
                     line = in.nextLine();
+                    log.debug("New Line "+line);
                     if (line != null && line.equals("") == false) {
                          if (line.charAt(0) == '/') {
                               output.write(json.toJson(new CommandContainer(line)));
@@ -61,12 +70,14 @@ public class ClientConnect {
                     }
                }
           } catch (IOException ex) {
+               log.error("Server doesn't answer",ex);
                System.out.println("Сервер не в сети, попробуйте позже.");
           }
      }
 }
 
 class InputListener implements Runnable {
+     private Logger log = LoggerFactory.getLogger(InputListener.class);
      private  Map<AnswerCode,String> serverAnswer=null;
      private Socket socket;
      private ClientConnect connect;
@@ -76,29 +87,28 @@ class InputListener implements Runnable {
           this.socket = socket;
           this.connect = connect;
           this.json = new Gson();
-          serverAnswer =new EnumMap<AnswerCode, String>(AnswerCode.class);
-          serverAnswer.put(AnswerCode.NEED_REGISTER_OR_LOGIN,"Вы должны авторизироваться или зарегистрироваться");
-          serverAnswer.put(AnswerCode.UNKNOWN_MISTAKE,"Непредвиденная ошибка");
-          serverAnswer.put(AnswerCode.UNKNOWN_COMMAND,"Неверная команда");
-          serverAnswer.put(AnswerCode.DONT_HAVE_CHAT,"У вас нет активной беседы");
-          serverAnswer.put(AnswerCode.LEAVE_CHAT,"Вы покинули беседу");
-          serverAnswer.put(AnswerCode.CAN_NOT_LEAVE_AGENT_WITH_CLIENT,"Нельзя отключаться агентам с клиентом в сети");
-          serverAnswer.put(AnswerCode.NO_AGENT_WAIT,"К сожалению, свободных агентов нет, мы уведовим вас когда вас подключат");
-          serverAnswer.put(AnswerCode.FIRST_AGENT_ANSWER_YOU,"Первый освободившийся агент ответит вам");
-          serverAnswer.put(AnswerCode.DONT_HAVE_CLIENT,"У вас нет подключенных клиентов");
-          serverAnswer.put(AnswerCode.UNKNOWN_TYPE_USER,"Неверно введен тип пользователя");
-          serverAnswer.put(AnswerCode.INVALID_CHARACTERS,"Недопустимые символы в имени");
-          serverAnswer.put(AnswerCode.CLIENT_ONLINE_YET,"Клиент с таким именем уже в сети");
-          serverAnswer.put(AnswerCode.DONT_HAVE_REGISTER_CLIENT,"Нет такого зарегистрированного клиента");
-          serverAnswer.put(AnswerCode.AGENT_ONLINE_YET,"Агент с таким именем уже в сети");
-          serverAnswer.put(AnswerCode.DONT_HAVE_REGISTER_AGENT,"Нет такого зарегистрированного агента");
-          serverAnswer.put(AnswerCode.NAME_ALREADY_USED,"Выбранное имя уже занято");
-          serverAnswer.put(AnswerCode.CLIENT_LEAVE,"Клиент отключился");
-          serverAnswer.put(AnswerCode.AGENT_LEAVE,"Агент отключился");
-          serverAnswer.put(AnswerCode.AGENT_LEAVE_WAIT_NEW,"Агент отключился, первый освободившийся агент ответит вам");
-          serverAnswer.put(AnswerCode.NEW_AGENT,"К вам подключился агент ");
-          serverAnswer.put(AnswerCode.NEW_CLIENT,"Вы подключены к клиенту ");
-          serverAnswer.put(AnswerCode.YOU_REGISTER_OR_LOGIN_YET,"Вы уже зарегистрировались или авторизовались");
+          config();
+     }
+
+     private void config() {
+          final String PATH="Client/src/main/resources/config.txt";
+          serverAnswer = new EnumMap(AnswerCode.class);
+          try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(PATH))))) {
+               String line;
+               line = fileReader.readLine();
+               while (line != null && !"".equals(line)) {
+                    serverAnswer.put(AnswerCode.getEnumByInt(Integer.valueOf(line.substring(0, line.indexOf('|')))), line.substring(line.indexOf('|') + 1, line.length()));
+                    line = fileReader.readLine();
+               }
+          } catch (FileNotFoundException e) {
+               System.out.println("Непредвиденная ошибка");
+               log.error("File not found",e);
+               connect.exit();
+          } catch (IOException e) {
+               System.out.println("Непредвиденная ошибка");
+               log.error("IOException",e);
+               connect.exit();
+          }
      }
 
      public void run() {
@@ -109,12 +119,14 @@ class InputListener implements Runnable {
                     control(command);
                }
           } catch (IOException exception) {
+               log.error("IOException",exception);
                System.out.println("Сервер не в сети, поробуйте позже.");
                connect.exit();
           }
      }
 
      private void control(CommandContainer container) {
+          log.info(container.toString());
           if (container == null) return;
           if(container.getServerinfo()!=AnswerCode.MESSAGE){
                if(container.getServerinfo()==AnswerCode.EXIT) {
@@ -134,7 +146,7 @@ class InputListener implements Runnable {
                } else {
                     if (container.getMessage() != null && container.getMessage().equals("goodRegister")) {
                          ClientConnect.client = new Client(container.getName(), container.isAgent());
-                         if (container.isAgent() == true) {
+                         if (container.isAgent()) {
                               System.out.println("Вы успешно зарегистрированы как агент " + container.getName());
                          } else {
                               System.out.println("Вы успешно зарегистрированы как клиент " + container.getName());
@@ -142,7 +154,7 @@ class InputListener implements Runnable {
                     } else {
                          if (container.getMessage() != null && container.getMessage().equals("goodLogin")) {
                               ClientConnect.client = new Client(container.getName(), container.isAgent());
-                              if (container.isAgent() == true) {
+                              if (container.isAgent()) {
                                    System.out.println("Вы успешно авторизированы как агент " + container.getName());
                               } else {
                                    System.out.println("Вы успешно авторизированы как клиент " + container.getName());
