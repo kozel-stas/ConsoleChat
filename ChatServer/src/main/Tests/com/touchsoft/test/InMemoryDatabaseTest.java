@@ -2,7 +2,7 @@ package com.touchsoft.test;
 
 import com.touchsoft.Client;
 import com.touchsoft.SocketHandler;
-import com.touchsoft.findAgentSystem;
+import com.touchsoft.FindAgentSystem;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,7 +17,7 @@ public class InMemoryDatabaseTest {
 
     @Before
     public void init(){
-        findAgentSystem.createDatabase();
+        FindAgentSystem.createDatabase();
         socketHandlerAgent=mock(SocketHandler.class);
         socketHandlerClient=mock(SocketHandler.class);
     }
@@ -28,56 +28,56 @@ public class InMemoryDatabaseTest {
         socketHandlerClient=null;
         client=null;
         agent=null;
-        findAgentSystem.clear();
-        findAgentSystem.dropDatabase();
+        FindAgentSystem.clear();
+        FindAgentSystem.dropDatabase();
     }
 
     @Test
     public void addClientOnDatabase(){
         client=new Client("stas",socketHandlerClient,false);
-        findAgentSystem.addUser(client);
-        findAgentSystem.removeUser(client);
-        Assert.assertTrue(findAgentSystem.findUser("stas"));
+        FindAgentSystem.addUser(client);
+        FindAgentSystem.removeUser(client);
+        Assert.assertTrue(FindAgentSystem.findUser("stas"));
     }
 
     @Test
     public void addAgentOnDatabase(){
         agent=new Client("stas",socketHandlerClient,true);
-        findAgentSystem.addAgent(agent);
-        findAgentSystem.removeAgent(agent);
-        Assert.assertTrue(findAgentSystem.findAgent("stas"));
+        FindAgentSystem.addAgent(agent);
+        FindAgentSystem.removeAgent(agent);
+        Assert.assertTrue(FindAgentSystem.findAgent("stas"));
     }
 
     @Test
     public void addClientOnDatabaseFindAgent(){
         client=new Client("stas",socketHandlerClient,false);
-        findAgentSystem.addUser(client);
-        findAgentSystem.removeUser(client);
-        Assert.assertFalse(findAgentSystem.findAgent("stas"));
+        FindAgentSystem.addUser(client);
+        FindAgentSystem.removeUser(client);
+        Assert.assertFalse(FindAgentSystem.findAgent("stas"));
     }
 
     @Test
     public void addAgentOnDatabaseFindClient(){
         agent=new Client("stas",socketHandlerClient,true);
-        findAgentSystem.addAgent(agent);
-        findAgentSystem.removeAgent(agent);
-        Assert.assertFalse(findAgentSystem.findUser("stas"));
+        FindAgentSystem.addAgent(agent);
+        FindAgentSystem.removeAgent(agent);
+        Assert.assertFalse(FindAgentSystem.findUser("stas"));
     }
 
     @Test
     public void loginDatabaseAgent(){
         agent=new Client("stas",socketHandlerClient,true);
-        findAgentSystem.addAgent(agent);
-        findAgentSystem.removeAgent(agent);
-        Assert.assertTrue(findAgentSystem.login("stas","Agent"));
+        FindAgentSystem.addAgent(agent);
+        FindAgentSystem.removeAgent(agent);
+        Assert.assertTrue(FindAgentSystem.login("stas","Agent"));
     }
 
     @Test
     public void loginDatabaseClient(){
         client =new Client("stas",socketHandlerClient,true);
-        findAgentSystem.addUser(client);
-        findAgentSystem.removeUser(client);
-        Assert.assertTrue(findAgentSystem.login("stas","Client"));
+        FindAgentSystem.addUser(client);
+        FindAgentSystem.removeUser(client);
+        Assert.assertTrue(FindAgentSystem.login("stas","Client"));
     }
 
 }

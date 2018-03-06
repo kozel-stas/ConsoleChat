@@ -3,8 +3,7 @@ package com.touchsoft;
 import com.google.gson.Gson;
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 public class ClientConnect {
      private String host;
@@ -39,7 +38,7 @@ public class ClientConnect {
           try {
                connect = new Socket(host, port);
                BufferedWriter output = new BufferedWriter(new OutputStreamWriter(connect.getOutputStream(), "UTF-8"));
-               Thread demonlistener = new Thread(new inputListener(connect, this));
+               Thread demonlistener = new Thread(new InputListener(connect, this));
                demonlistener.setDaemon(true);
                demonlistener.start();
                Scanner in = new Scanner(System.in);
@@ -67,28 +66,44 @@ public class ClientConnect {
      }
 }
 
-class inputListener implements Runnable {
-     private  ArrayList<String> serverAnswer=null;
+class InputListener implements Runnable {
+     private  Map<AnswerCode,String> serverAnswer=null;
      private Socket socket;
      private ClientConnect connect;
      private Gson json;
 
-     public inputListener(Socket socket, ClientConnect connect) {
+     public InputListener(Socket socket, ClientConnect connect) {
           this.socket = socket;
           this.connect = connect;
           this.json = new Gson();
-
+          serverAnswer =new EnumMap<AnswerCode, String>(AnswerCode.class);
+          serverAnswer.put(AnswerCode.NEED_REGISTER_OR_LOGIN,"Вы должны авторизироваться или зарегистрироваться");
+          serverAnswer.put(AnswerCode.UNKNOWN_MISTAKE,"Непредвиденная ошибка");
+          serverAnswer.put(AnswerCode.UNKNOWN_COMMAND,"Неверная команда");
+          serverAnswer.put(AnswerCode.DONT_HAVE_CHAT,"У вас нет активной беседы");
+          serverAnswer.put(AnswerCode.LEAVE_CHAT,"Вы покинули беседу");
+          serverAnswer.put(AnswerCode.CAN_NOT_LEAVE_AGENT_WITH_CLIENT,"Нельзя отключаться агентам с клиентом в сети");
+          serverAnswer.put(AnswerCode.NO_AGENT_WAIT,"К сожалению, свободных агентов нет, мы уведовим вас когда вас подключат");
+          serverAnswer.put(AnswerCode.FIRST_AGENT_ANSWER_YOU,"Первый освободившийся агент ответит вам");
+          serverAnswer.put(AnswerCode.DONT_HAVE_CLIENT,"У вас нет подключенных клиентов");
+          serverAnswer.put(AnswerCode.UNKNOWN_TYPE_USER,"Неверно введен тип пользователя");
+          serverAnswer.put(AnswerCode.INVALID_CHARACTERS,"Недопустимые символы в имени");
+          serverAnswer.put(AnswerCode.CLIENT_ONLINE_YET,"Клиент с таким именем уже в сети");
+          serverAnswer.put(AnswerCode.DONT_HAVE_REGISTER_CLIENT,"Нет такого зарегистрированного клиента");
+          serverAnswer.put(AnswerCode.AGENT_ONLINE_YET,"Агент с таким именем уже в сети");
+          serverAnswer.put(AnswerCode.DONT_HAVE_REGISTER_AGENT,"Нет такого зарегистрированного агента");
+          serverAnswer.put(AnswerCode.NAME_ALREADY_USED,"Выбранное имя уже занято");
+          serverAnswer.put(AnswerCode.CLIENT_LEAVE,"Клиент отключился");
+          serverAnswer.put(AnswerCode.AGENT_LEAVE,"Агент отключился");
+          serverAnswer.put(AnswerCode.AGENT_LEAVE_WAIT_NEW,"Агент отключился, первый освободившийся агент ответит вам");
+          serverAnswer.put(AnswerCode.NEW_AGENT,"К вам подключился агент ");
+          serverAnswer.put(AnswerCode.NEW_CLIENT,"Вы подключены к клиенту ");
+          serverAnswer.put(AnswerCode.YOU_REGISTER_OR_LOGIN_YET,"Вы уже зарегистрировались или авторизовались");
      }
 
      public void run() {
           try {
                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-               serverAnswer=json.fromJson(input.readLine(),ArrayList.class);
-               if(serverAnswer==null){
-                    System.out.println("Проблема на стороне сервера, попрубуйте еще раз");
-                    connect.exit();
-                    return;
-               }
                while (!socket.isClosed()) {
                     CommandContainer command = json.fromJson(input.readLine(), CommandContainer.class);
                     control(command);
@@ -101,12 +116,18 @@ class inputListener implements Runnable {
 
      private void control(CommandContainer container) {
           if (container == null) return;
-          if(container.getServerinfo()!=-1){
-               if(container.getServerinfo()==666) {connect.exit(); return;}
-               if(container.getServerinfo()==19 || container.getServerinfo()==20) {System.out.println(serverAnswer.get(container.getServerinfo())+container.getName()); return;}
+          if(container.getServerinfo()!=AnswerCode.MESSAGE){
+               if(container.getServerinfo()==AnswerCode.EXIT) {
+                    connect.exit();
+                    return;
+               }
+               if(container.getServerinfo()==AnswerCode.NEW_AGENT || container.getServerinfo()==AnswerCode.NEW_CLIENT) {
+                    System.out.println(serverAnswer.get(container.getServerinfo())+container.getName());
+                    return;
+               }
                System.out.println(container.getName()+"     "+serverAnswer.get(container.getServerinfo()));
           }else {
-               if (container.getMessage() != null && container.getMessage().equals("goodRegister") == false && container.getMessage().equals("goodLogin") == false) {
+               if (container.getMessage() != null && !container.getMessage().equals("goodRegister") && !container.getMessage().equals("goodLogin")) {
                     if (container.isAgent()) System.out.print("Агент ");
                     else System.out.print("Клиент ");
                     System.out.println(container.getName() + ":   " + container.getMessage());

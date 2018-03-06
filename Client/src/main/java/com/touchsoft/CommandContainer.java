@@ -1,13 +1,14 @@
 package com.touchsoft;
 
 public class CommandContainer {
+
     private String name;
     private boolean isAgent;
     private String command;
     private String message;
-    private int serverinfo;
+    private AnswerCode serverinfo;
 
-    public CommandContainer (int serverinfo, String name){
+    public CommandContainer (AnswerCode serverinfo, String name){
         this.name=name;
         this.isAgent=false;
         this.command=null;
@@ -20,14 +21,13 @@ public class CommandContainer {
         this.isAgent=isAgent;
         this.command = null;
         this.message = message;
-        serverinfo=-1;
+        this.serverinfo=AnswerCode.MESSAGE;
     }
 
     public CommandContainer (String command) {
         this.isAgent = false;
         this.command = command;
         this.message = null;
-        this.serverinfo=-1;
     }
 
     public String getName() {
@@ -46,7 +46,7 @@ public class CommandContainer {
         return isAgent;
     }
 
-    public int getServerinfo() {
+    public AnswerCode getServerinfo() {
         return serverinfo;
     }
 
@@ -55,7 +55,7 @@ public class CommandContainer {
         if(command!=null){
             return command;
         } else {
-            if(serverinfo==-1) return name+" isAgent "+ isAgent+" "+message;
+            if(serverinfo==AnswerCode.MESSAGE) return name+" isAgent "+ isAgent+" "+message;
             else return name+" "+serverinfo;
         }
     }

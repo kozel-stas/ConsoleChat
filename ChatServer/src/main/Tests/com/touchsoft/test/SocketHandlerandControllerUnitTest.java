@@ -1,14 +1,18 @@
 package com.touchsoft.test;
 
 import com.google.gson.Gson;
+import com.touchsoft.AnswerCode;
 import com.touchsoft.CommandContainer;
 import com.touchsoft.SocketHandler;
-import com.touchsoft.findAgentSystem;
+import com.touchsoft.FindAgentSystem;
 import org.junit.*;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,37 +23,38 @@ public class SocketHandlerandControllerUnitTest {
     private ByteArrayInputStream inputStream;
     private Gson gson=new Gson();
     private Socket socket;
-    private static ArrayList<String> serverAnswer=new ArrayList<>();
+    private static Map<AnswerCode,String> serverAnswer;
 
     @BeforeClass
     public static void setServerAnswer(){
-        serverAnswer.add(0,"Вы должны авторизироваться или зарегистрироваться");
-        serverAnswer.add(1,"Непредвиденная ошибка");
-        serverAnswer.add(2,"Неверная команда");
-        serverAnswer.add(3,"У вас нет активной беседы");
-        serverAnswer.add(4,"Вы покинули беседу");
-        serverAnswer.add(5,"Нельзя отключаться агентам с клиентом в сети");
-        serverAnswer.add(6,"К сожалению, свободных агентов нет, мы уведовим вас когда вас подключат");
-        serverAnswer.add(7,"Первый освободившийся агент ответит вам");
-        serverAnswer.add(8,"У вас нет подключенных клиентов");
-        serverAnswer.add(9,"Неверно введен тип пользователя");
-        serverAnswer.add(10,"Недопустимые символы в имени");
-        serverAnswer.add(11,"Клиент с таким именем уже в сети");
-        serverAnswer.add(12,"Нет такого зарегистрированного клиента");
-        serverAnswer.add(13,"Агент с таким именем уже в сети");
-        serverAnswer.add(14,"Нет такого зарегистрированного агента");
-        serverAnswer.add(15,"Выбранное имя уже занято");
-        serverAnswer.add(16,"Клиент отключился");
-        serverAnswer.add(17,"Агент отключился");
-        serverAnswer.add(18,"Агент отключился, первый освободившийся агент ответит вам");
-        serverAnswer.add(19,"К вам подключился агент ");
-        serverAnswer.add(20,"Вы подключены к клиенту ");
-        serverAnswer.add(21,"Вы уже зарегистрировались или авторизовались");
+        serverAnswer = new EnumMap<AnswerCode, String>(AnswerCode.class);
+        serverAnswer.put(AnswerCode.NEED_REGISTER_OR_LOGIN, "Вы должны авторизироваться или зарегистрироваться");
+        serverAnswer.put(AnswerCode.UNKNOWN_MISTAKE, "Непредвиденная ошибка");
+        serverAnswer.put(AnswerCode.UNKNOWN_COMMAND, "Неверная команда");
+        serverAnswer.put(AnswerCode.DONT_HAVE_CHAT, "У вас нет активной беседы");
+        serverAnswer.put(AnswerCode.LEAVE_CHAT, "Вы покинули беседу");
+        serverAnswer.put(AnswerCode.CAN_NOT_LEAVE_AGENT_WITH_CLIENT, "Нельзя отключаться агентам с клиентом в сети");
+        serverAnswer.put(AnswerCode.NO_AGENT_WAIT, "К сожалению, свободных агентов нет, мы уведовим вас когда вас подключат");
+        serverAnswer.put(AnswerCode.FIRST_AGENT_ANSWER_YOU, "Первый освободившийся агент ответит вам");
+        serverAnswer.put(AnswerCode.DONT_HAVE_CLIENT, "У вас нет подключенных клиентов");
+        serverAnswer.put(AnswerCode.UNKNOWN_TYPE_USER, "Неверно введен тип пользователя");
+        serverAnswer.put(AnswerCode.INVALID_CHARACTERS, "Недопустимые символы в имени");
+        serverAnswer.put(AnswerCode.CLIENT_ONLINE_YET, "Клиент с таким именем уже в сети");
+        serverAnswer.put(AnswerCode.DONT_HAVE_REGISTER_CLIENT, "Нет такого зарегистрированного клиента");
+        serverAnswer.put(AnswerCode.AGENT_ONLINE_YET, "Агент с таким именем уже в сети");
+        serverAnswer.put(AnswerCode.DONT_HAVE_REGISTER_AGENT, "Нет такого зарегистрированного агента");
+        serverAnswer.put(AnswerCode.NAME_ALREADY_USED, "Выбранное имя уже занято");
+        serverAnswer.put(AnswerCode.CLIENT_LEAVE, "Клиент отключился");
+        serverAnswer.put(AnswerCode.AGENT_LEAVE, "Агент отключился");
+        serverAnswer.put(AnswerCode.AGENT_LEAVE_WAIT_NEW, "Агент отключился, первый освободившийся агент ответит вам");
+        serverAnswer.put(AnswerCode.NEW_AGENT, "К вам подключился агент ");
+        serverAnswer.put(AnswerCode.NEW_CLIENT, "Вы подключены к клиенту ");
+        serverAnswer.put(AnswerCode.YOU_REGISTER_OR_LOGIN_YET, "Вы уже зарегистрировались или авторизовались");
     }
 
     @Before
     public void init() throws IOException{
-        findAgentSystem.createDatabase();
+        FindAgentSystem.createDatabase();
         outputStream=new ByteArrayOutputStream();
         socket=mock(Socket.class);
         when(socket.getOutputStream()).thenReturn(outputStream);
@@ -59,7 +64,7 @@ public class SocketHandlerandControllerUnitTest {
     public void clean() throws IOException{
         outputStream.close();
         inputStream.close();
-        findAgentSystem.dropDatabase();
+        FindAgentSystem.dropDatabase();
     }
 
     @Test
@@ -69,7 +74,7 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        Assert.assertEquals(gson.toJson(serverAnswer)+"\n"+gson.toJson(new CommandContainer("stas",true,"goodRegister"))+"\n",outputStream.toString("UTF-8"));
+        Assert.assertEquals(gson.toJson(new CommandContainer("stas",true,"goodRegister"))+"\n",outputStream.toString("UTF-8"));
     }
 
     @Test
@@ -82,11 +87,10 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",true,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(21,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.YOU_REGISTER_OR_LOGIN_YET,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -98,7 +102,7 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        Assert.assertEquals(gson.toJson(serverAnswer)+"\n"+gson.toJson(new CommandContainer("stas",false,"goodRegister"))+"\n",outputStream.toString("UTF-8"));
+        Assert.assertEquals(gson.toJson(new CommandContainer("stas",false,"goodRegister"))+"\n",outputStream.toString("UTF-8"));
     }
 
     @Test
@@ -111,11 +115,10 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",false,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(21,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.YOU_REGISTER_OR_LOGIN_YET,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -128,9 +131,8 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(0,"Server")));
+        stringBuilder=new StringBuilder("");
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.NEED_REGISTER_OR_LOGIN,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -143,9 +145,8 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(2,"Server")));
+        stringBuilder=new StringBuilder("");
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.UNKNOWN_COMMAND,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -158,9 +159,8 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(666,"Server")));
+        stringBuilder=new StringBuilder("");
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.EXIT,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -173,9 +173,8 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(12, "Server")));
+        stringBuilder=new StringBuilder("");
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.DONT_HAVE_REGISTER_CLIENT, "Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -194,15 +193,14 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
+        stringBuilder=new StringBuilder("");
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.UNKNOWN_TYPE_USER,"Server")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(9,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.UNKNOWN_COMMAND,"Server")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(2,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.UNKNOWN_TYPE_USER,"Server")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(9,"Server")));
-        stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(10,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.INVALID_CHARACTERS,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -217,11 +215,10 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",true,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(666,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.EXIT,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -236,11 +233,10 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",false,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(666,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.EXIT,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -253,9 +249,8 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(0,"Server")));
+        stringBuilder=new StringBuilder("");
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.NEED_REGISTER_OR_LOGIN,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -270,11 +265,10 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",false,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(6,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.NO_AGENT_WAIT,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -289,11 +283,10 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",true,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(8,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.DONT_HAVE_CLIENT,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -308,11 +301,10 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",true,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(8,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.DONT_HAVE_CLIENT,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -342,11 +334,10 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",true,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(3,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.DONT_HAVE_CHAT,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -361,11 +352,10 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",false,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(3,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.DONT_HAVE_CHAT,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -382,13 +372,12 @@ public class SocketHandlerandControllerUnitTest {
         when(socket.getInputStream()).thenReturn(inputStream);
         testSocketHandler=new SocketHandler(socket,serverAnswer);
         testSocketHandler.run();
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",false,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(666,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.EXIT,"Server")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(21,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.YOU_REGISTER_OR_LOGIN_YET,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
     }
@@ -417,18 +406,16 @@ public class SocketHandlerandControllerUnitTest {
         SocketHandler testSocketHandler1=new SocketHandler(socket1,serverAnswer);
         testSocketHandler1.run();
         //****************************************************
-        stringBuilder1=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder1.append("\n");
+        stringBuilder1=new StringBuilder("");
         stringBuilder1.append(gson.toJson(new CommandContainer("stas",false,"goodLogin")));
         stringBuilder1.append("\n");
         //***************************************************
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",false,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(6,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.NO_AGENT_WAIT,"Server")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(21,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.YOU_REGISTER_OR_LOGIN_YET,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder1.toString(),outputStream1.toString("UTF-8"));
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
@@ -458,18 +445,16 @@ public class SocketHandlerandControllerUnitTest {
         SocketHandler testSocketHandler1=new SocketHandler(socket1,serverAnswer);
         testSocketHandler1.run();
         //****************************************************
-        stringBuilder1=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder1.append("\n");
+        stringBuilder1=new StringBuilder("");
         stringBuilder1.append(gson.toJson(new CommandContainer("stas",true,"goodLogin")));
         stringBuilder1.append("\n");
         //***************************************************
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",true,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(8,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.DONT_HAVE_CLIENT,"Server")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(21,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.YOU_REGISTER_OR_LOGIN_YET,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder1.toString(),outputStream1.toString("UTF-8"));
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));
@@ -499,18 +484,16 @@ public class SocketHandlerandControllerUnitTest {
         SocketHandler testSocketHandler1=new SocketHandler(socket1,serverAnswer);
         testSocketHandler1.run();
         //****************************************************
-        stringBuilder1=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder1.append("\n");
-        stringBuilder1.append(gson.toJson(new CommandContainer(12,"Server")));
+        stringBuilder1=new StringBuilder("");
+        stringBuilder1.append(gson.toJson(new CommandContainer(AnswerCode.DONT_HAVE_REGISTER_CLIENT,"Server")));
         stringBuilder1.append("\n");
         //***************************************************
-        stringBuilder=new StringBuilder(gson.toJson(serverAnswer));
-        stringBuilder.append("\n");
+        stringBuilder=new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas",true,"goodRegister")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(8,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.DONT_HAVE_CLIENT,"Server")));
         stringBuilder.append("\n");
-        stringBuilder.append(gson.toJson(new CommandContainer(21,"Server")));
+        stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.YOU_REGISTER_OR_LOGIN_YET,"Server")));
         stringBuilder.append("\n");
         Assert.assertEquals(stringBuilder1.toString(),outputStream1.toString("UTF-8"));
         Assert.assertEquals(stringBuilder.toString(),outputStream.toString("UTF-8"));

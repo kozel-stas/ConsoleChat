@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 public class SocketHandler implements Runnable {
@@ -14,9 +15,9 @@ public class SocketHandler implements Runnable {
     private BufferedWriter output;
     private Controller controller;
     private Gson json;
-    private ArrayList<String> serverAnswer;
+    private Map<AnswerCode,String> serverAnswer;
 
-    public SocketHandler (Socket connect,ArrayList<String> serverAnswer) throws IOException {
+    public SocketHandler (Socket connect,Map<AnswerCode,String> serverAnswer) throws IOException {
         this.connect=connect;
         input = new BufferedReader(new InputStreamReader(connect.getInputStream(), "UTF-8"));
         output = new BufferedWriter(new OutputStreamWriter(connect.getOutputStream(), "UTF-8"));
@@ -26,16 +27,6 @@ public class SocketHandler implements Runnable {
     }
     //прием сообщений и корректное закрытие и синхронизированный send;
     public void run()  {
-        if(!connect.isClosed()){
-            try {
-                output.write(json.toJson(serverAnswer));
-                output.write("\n");
-                output.flush();
-            } catch(IOException ex) {
-                close();
-                log.warn("Error sending array",ex);
-            }
-        }
         CommandContainer command=null;
         while (!connect.isClosed()){
             try {

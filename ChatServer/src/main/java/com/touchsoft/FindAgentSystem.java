@@ -6,8 +6,8 @@ import java.sql.*;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-public class findAgentSystem {
-    private static Logger log= LoggerFactory.getLogger(com.touchsoft.findAgentSystem.class);
+public class FindAgentSystem {
+    private static Logger log= LoggerFactory.getLogger(com.touchsoft.FindAgentSystem.class);
     private static  final String url = "jdbc:derby:memory:ServerChatDB";
     private static Connection connection;
     private static Statement stmt;
@@ -94,8 +94,8 @@ public class findAgentSystem {
                 user.setRecipient(client);
                 client.setRecipient(user);
                 user.getMysocket().notWaitAgent();
-                user.getMysocket().send(new CommandContainer(19 , client.getName()));
-                client.getMysocket().send(new CommandContainer(20 , user.getName()));
+                user.getMysocket().send(new CommandContainer(AnswerCode.NEW_AGENT , client.getName()));
+                client.getMysocket().send(new CommandContainer(AnswerCode.NEW_CLIENT, user.getName()));
                 return true;
             } else {
                 waitAgents.add(client);
@@ -107,8 +107,8 @@ public class findAgentSystem {
                 agent.setRecipient(client);
                 client.setRecipient(agent);
                 client.getMysocket().notWaitAgent();
-                client.getMysocket().send(new CommandContainer(19 , agent.getName()));
-                agent.getMysocket().send(new CommandContainer(20 , client.getName()));
+                client.getMysocket().send(new CommandContainer(AnswerCode.NEW_AGENT , agent.getName()));
+                agent.getMysocket().send(new CommandContainer(AnswerCode.NEW_CLIENT , client.getName()));
                 return true;
             } else {
                 client.getMysocket().waitAgent();
