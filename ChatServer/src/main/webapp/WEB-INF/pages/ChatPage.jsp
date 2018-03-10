@@ -11,6 +11,32 @@
     <title>Title</title>
 </head>
 <body>
-<%=request.getSession().getAttribute("login")%>
+<<textarea name="textArea" id="" cols="30" rows="10">
+
+</textarea>
+<form name="publish">
+    <input type="text" name="message">
+    <input type="submit" value="Отправить">
+</form>
+
+<script>
+    var socket = new WebSocket("ws://"+location.host+"/websocket");
+
+    // отправить сообщение из формы publish
+    document.forms.publish.onsubmit = function() {
+        var outgoingMessage = this.message.value;
+        socket.send(outgoingMessage);
+        this.message.value="";
+        return false;
+    };
+
+    // обработчик входящих сообщений
+    socket.onmessage = function(event) {
+        var incomingMessage = event.data;
+        showMessage(incomingMessage);
+    };
+
+
+</script>
 </body>
 </html>
