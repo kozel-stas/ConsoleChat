@@ -1,4 +1,4 @@
-package com.touchsoft;
+package model;
 
 public enum AnswerCode {
     EXIT(600),

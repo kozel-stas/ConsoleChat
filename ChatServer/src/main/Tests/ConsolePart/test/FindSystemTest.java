@@ -1,10 +1,11 @@
-package com.touchsoft.test;
+package ConsolePart.test;
 
-import com.touchsoft.*;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import ConsolePart.SocketHandler;
+import model.AnswerCode;
+import model.Client;
+import model.CommandContainer;
+import model.FindAgentSystem;
+import org.junit.*;
 import org.mockito.stubbing.Answer;
 
 import static org.mockito.Matchers.any;
@@ -12,7 +13,8 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 
-public class findSystemTest {
+public class FindSystemTest {
+    private static FindAgentSystem findAgentSystem;
     private Client client;
     private Client agent;
     private SocketHandler socketHandlerAgent;
@@ -20,8 +22,14 @@ public class findSystemTest {
     private CommandContainer answerAgent;
     private CommandContainer answerClient;
 
+    @BeforeClass
+    public static void createFindAgentSystem(){
+        findAgentSystem=new FindAgentSystem();
+    }
+
     @Before
     public void init() {
+        findAgentSystem=new FindAgentSystem();
         socketHandlerAgent = mock(SocketHandler.class);
         socketHandlerClient = mock(SocketHandler.class);
         doAnswer((Answer) invocation -> {
@@ -44,15 +52,15 @@ public class findSystemTest {
         agent = null;
         answerAgent = null;
         answerClient = null;
-        FindAgentSystem.clear();
+        findAgentSystem.clear();
     }
 
     @Test
     public void findSystemTestAgentClient() {
         client = new Client("stas", socketHandlerClient, false);
         agent = new Client("stas", socketHandlerAgent, true);
-        Assert.assertFalse(FindAgentSystem.findSystem(agent));
-        Assert.assertTrue(FindAgentSystem.findSystem(client));
+        Assert.assertFalse(findAgentSystem.findSystem(agent));
+        Assert.assertTrue(findAgentSystem.findSystem(client));
         Assert.assertEquals(new CommandContainer(AnswerCode.NEW_CLIENT, "stas").toString(), answerAgent.toString());
         Assert.assertEquals(new CommandContainer(AnswerCode.NEW_AGENT, "stas").toString(), answerClient.toString());
     }
@@ -60,21 +68,21 @@ public class findSystemTest {
     @Test
     public void findSystemTestClient() {
         client = new Client("stas", socketHandlerClient, false);
-        Assert.assertFalse(FindAgentSystem.findSystem(client));
+        Assert.assertFalse(findAgentSystem.findSystem(client));
     }
 
     @Test
     public void findSystemTestAgent() {
         agent = new Client("stas", socketHandlerClient, true);
-        Assert.assertFalse(FindAgentSystem.findSystem(agent));
+        Assert.assertFalse(findAgentSystem.findSystem(agent));
     }
 
     @Test
     public void findSystemTestClientAgent() {
         agent = new Client("Vlad", socketHandlerAgent, true);
         client = new Client("Stas", socketHandlerClient, false);
-        Assert.assertFalse(FindAgentSystem.findSystem(client));
-        Assert.assertTrue(FindAgentSystem.findSystem(agent));
+        Assert.assertFalse(findAgentSystem.findSystem(client));
+        Assert.assertTrue(findAgentSystem.findSystem(agent));
         Assert.assertEquals(new CommandContainer(AnswerCode.NEW_CLIENT, "Stas").toString(), answerAgent.toString());
         Assert.assertEquals(new CommandContainer(AnswerCode.NEW_AGENT, "Vlad").toString(), answerClient.toString());
     }
@@ -83,12 +91,12 @@ public class findSystemTest {
     public void findSystemTestSomeClientAgent() {
         agent = new Client("Vlad", socketHandlerAgent, true);
         client = new Client("Stas", socketHandlerClient, false);
-        Client testClient = new Client("Test", mock(SocketHandler.class), false);
+        Client testClient = new Client("WebPart", mock(SocketHandler.class), false);
         Client testClient1 = new Client("Test1", mock(SocketHandler.class), false);
-        Assert.assertFalse(FindAgentSystem.findSystem(client));
-        Assert.assertFalse(FindAgentSystem.findSystem(testClient));
-        Assert.assertFalse(FindAgentSystem.findSystem(testClient1));
-        Assert.assertTrue(FindAgentSystem.findSystem(agent));
+        Assert.assertFalse(findAgentSystem.findSystem(client));
+        Assert.assertFalse(findAgentSystem.findSystem(testClient));
+        Assert.assertFalse(findAgentSystem.findSystem(testClient1));
+        Assert.assertTrue(findAgentSystem.findSystem(agent));
         Assert.assertEquals(new CommandContainer(AnswerCode.NEW_CLIENT, "Stas").toString(), answerAgent.toString());
         Assert.assertEquals(new CommandContainer(AnswerCode.NEW_AGENT, "Vlad").toString(), answerClient.toString());
     }
@@ -97,12 +105,12 @@ public class findSystemTest {
     public void findSystemTestClientSomeAgent() {
         agent = new Client("Vlad", socketHandlerAgent, true);
         client = new Client("Stas", socketHandlerClient, false);
-        Client testAgent = new Client("Test", mock(SocketHandler.class), true);
+        Client testAgent = new Client("WebPart", mock(SocketHandler.class), true);
         Client testAgent1 = new Client("Test1", mock(SocketHandler.class), true);
-        Assert.assertFalse(FindAgentSystem.findSystem(client));
-        Assert.assertTrue(FindAgentSystem.findSystem(agent));
-        Assert.assertFalse(FindAgentSystem.findSystem(testAgent));
-        Assert.assertFalse(FindAgentSystem.findSystem(testAgent1));
+        Assert.assertFalse(findAgentSystem.findSystem(client));
+        Assert.assertTrue(findAgentSystem.findSystem(agent));
+        Assert.assertFalse(findAgentSystem.findSystem(testAgent));
+        Assert.assertFalse(findAgentSystem.findSystem(testAgent1));
         Assert.assertEquals(new CommandContainer(AnswerCode.NEW_CLIENT, "Stas").toString(), answerAgent.toString());
         Assert.assertEquals(new CommandContainer(AnswerCode.NEW_AGENT, "Vlad").toString(), answerClient.toString());
     }

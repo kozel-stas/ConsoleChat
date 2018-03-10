@@ -2,7 +2,7 @@
 <configuration>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>ChatServer/myApp.log</file>
+        <file>myApp.log</file>
         <encoder>
             <pattern>%date %-5level [%thread] %logger{36} [%file:%line] %msg%n</pattern>
         </encoder>

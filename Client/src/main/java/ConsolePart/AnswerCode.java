@@ -1,4 +1,4 @@
-package com.touchsoft;
+package ConsolePart;
 
 public enum AnswerCode {
     EXIT(600),

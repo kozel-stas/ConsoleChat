@@ -7,6 +7,7 @@
   <!--<groupId>com.touchsoft</groupId>-->
     <artifactId>ChatServer</artifactId>
     <!--<version>1.0</version>-->
+    <packaging>war</packaging>
     <parent>
         <groupId>com.touchsoft</groupId>
         <artifactId>ConsoleChat</artifactId>
@@ -35,6 +36,19 @@
             <version>10.13.1.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>jstl</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -51,10 +65,16 @@
                     <execution>
                         <phase>package</phase>
                         <configuration>
+                            <systemProperties>
+                            <systemProperty>
+                                <name>derby.stream.error.file</name>
+                                <value>${project.build.directory}/derby.log</value>
+                            </systemProperty>
+                            </systemProperties>
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.touchsoft.Main</mainClass>
+                                    <mainClass>Main</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

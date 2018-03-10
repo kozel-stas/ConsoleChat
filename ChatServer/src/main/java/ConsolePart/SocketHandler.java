@@ -1,27 +1,33 @@
-package com.touchsoft;
+package ConsolePart;
 
 import com.google.gson.Gson;
+import model.CommandContainer;
+import model.FindAgentSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Map;
 
 
 public class SocketHandler implements Runnable {
-    private Logger log = LoggerFactory.getLogger(com.touchsoft.SocketHandler.class);
+    private Logger log = LoggerFactory.getLogger(SocketHandler.class);
     private Socket connect;
     private BufferedReader input;
     private BufferedWriter output;
     private Controller controller;
+    private FindAgentSystem findAgentSystem;
     private Gson json;
 
-    public SocketHandler(Socket connect) throws IOException {
+    public SocketHandler(Socket connect, FindAgentSystem findAgentSystem){
+        this.findAgentSystem=findAgentSystem;
         this.connect = connect;
-        input = new BufferedReader(new InputStreamReader(connect.getInputStream(), "UTF-8"));
-        output = new BufferedWriter(new OutputStreamWriter(connect.getOutputStream(), "UTF-8"));
+        try {
+            input = new BufferedReader(new InputStreamReader(connect.getInputStream(), "UTF-8"));
+            output = new BufferedWriter(new OutputStreamWriter(connect.getOutputStream(), "UTF-8"));
+        } catch (IOException e) {
+            log.error("IOException in start SocketHandler",e);
+        }
         controller = new Controller(this);
         json = new Gson();
     }
@@ -55,7 +61,7 @@ public class SocketHandler implements Runnable {
         controller.updateBufferedMessage();
     }
 
-    private void close() {
+    protected void close() {
         if (!connect.isClosed()) {
             try {
                 controller.leave();
@@ -77,5 +83,9 @@ public class SocketHandler implements Runnable {
                 log.error("Error sending message", ex);
             }
         }
+    }
+
+    public FindAgentSystem getFindAgentSystem() {
+        return findAgentSystem;
     }
 }

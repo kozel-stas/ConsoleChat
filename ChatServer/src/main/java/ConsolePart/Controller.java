@@ -1,5 +1,9 @@
-package com.touchsoft;
+package ConsolePart;
 
+import model.AnswerCode;
+import model.Client;
+import model.CommandContainer;
+import model.FindAgentSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +18,7 @@ public class Controller {
     private SocketHandler socket;
     private boolean waitAgent = false;
     private List<CommandContainer> bufferedMessage = null;
+    private FindAgentSystem findAgentSystem;
 
     private static Pattern registerOrLoginAgentOrClientPattern = Pattern.compile("^\\/(register|login) (agent|client) [A-z0-9]*$");
     private static Pattern registerPattern = Pattern.compile("^\\/register ");
@@ -25,6 +30,7 @@ public class Controller {
 
     public Controller(SocketHandler socket) {
         this.socket = socket;
+        findAgentSystem=socket.getFindAgentSystem();
     }
 
     public void handler(CommandContainer container) {
@@ -32,15 +38,18 @@ public class Controller {
         if (client == null) {
             if (container.getCommand() != null) {
                 handlerCommand(container);
+                return;
             } else {
                 socket.send(new CommandContainer(AnswerCode.NEED_REGISTER_OR_LOGIN, "Server"));
             }
         } else {
             if (container.getCommand() != null) {
                 handlerCommand(container);
+                return;
             } else {
                 if (container.getMessage() != null) {
                     handlerMessage(container);
+                    return;
                 } else {
                     log.warn("unknown command " + container.toString());
                     socket.send(new CommandContainer(AnswerCode.UNKNOWN_MISTAKE, "server"));
@@ -108,7 +117,7 @@ public class Controller {
                     bufferedMessage.add(container);
                     socket.send(new CommandContainer(AnswerCode.FIRST_AGENT_ANSWER_YOU, "Server"));
                 } else {
-                    if (FindAgentSystem.findSystem(client)) {
+                    if (findAgentSystem.findSystem(client)) {
                         log.info("start conversation " + client.toString() + " " + client.getRecipient().toString());
                         client.getRecipient().getMysocket().send(container);
                     } else {
@@ -134,8 +143,8 @@ public class Controller {
     private void loginUser(String command) {
         if (registerOrLoginAgentOrClientPattern.matcher(command).find()) {
             String line = command.substring(command.lastIndexOf(" ") + 1, command.length());
-            if (!FindAgentSystem.login(line, "Client")) {
-                if (FindAgentSystem.findUser(line)) {
+            if (!findAgentSystem.login(line, "Client")) {
+                if (findAgentSystem.findUser(line)) {
                     socket.send(new CommandContainer(AnswerCode.CLIENT_ONLINE_YET, "Server"));
                     return;
                 }
@@ -143,7 +152,7 @@ public class Controller {
                 return;
             }
             Client user = new Client(line, socket, false);
-            FindAgentSystem.addUser(user);
+            findAgentSystem.addUser(user);
             log.info("Login client", user);
             client = user;
             socket.send(new CommandContainer(line, false, "goodLogin"));
@@ -153,8 +162,8 @@ public class Controller {
     private void loginAgent(String command) {
         if (registerOrLoginAgentOrClientPattern.matcher(command).find()) {
             String line = command.substring(command.lastIndexOf(" ") + 1, command.length());
-            if (!FindAgentSystem.login(line, "Agent")) {
-                if (FindAgentSystem.findAgent(line)) {
+            if (!findAgentSystem.login(line, "Agent")) {
+                if (findAgentSystem.findAgent(line)) {
                     socket.send(new CommandContainer(AnswerCode.AGENT_ONLINE_YET, "Server"));
                     return;
                 }
@@ -162,10 +171,10 @@ public class Controller {
                 return;
             }
             Client agent = new Client(line, socket, true);
-            FindAgentSystem.addAgent(agent);
+            findAgentSystem.addAgent(agent);
             log.info("Login agent", agent);
             socket.send(new CommandContainer(line, true, "goodLogin"));
-            if (FindAgentSystem.findSystem(agent)) {
+            if (findAgentSystem.findSystem(agent)) {
                 agent.getRecipient().getMysocket().updateBufferedMessage();
                 log.info("start conversation" + agent.toString() + " " + agent.getRecipient().toString());
             }
@@ -185,15 +194,15 @@ public class Controller {
     private void regAgent(String command) {
         if (registerOrLoginAgentOrClientPattern.matcher(command.toString()).find()) {
             String line = command.substring(command.lastIndexOf(" ") + 1, command.length());
-            if (FindAgentSystem.findAgent(line)) {
+            if (findAgentSystem.findAgent(line)) {
                 socket.send(new CommandContainer(AnswerCode.NAME_ALREADY_USED, "Server"));
                 return;
             }
             Client agent = new Client(line, socket, true);
-            FindAgentSystem.addAgent(agent);
+            findAgentSystem.addAgent(agent);
             agent.getMysocket().send(new CommandContainer(line, true, "goodRegister"));
             log.info("register new agent", agent);
-            if (FindAgentSystem.findSystem(agent)) {
+            if (findAgentSystem.findSystem(agent)) {
                 agent.getRecipient().getMysocket().updateBufferedMessage();
                 log.info("start conversation" + agent.toString() + " " + agent.getRecipient().toString());
             }
@@ -204,12 +213,12 @@ public class Controller {
     private void regUser(String command) {
         if (registerOrLoginAgentOrClientPattern.matcher(command.toString()).find()) {
             String line = command.substring(command.lastIndexOf(" ") + 1, command.length());
-            if (FindAgentSystem.findUser(line)) {
+            if (findAgentSystem.findUser(line)) {
                 socket.send(new CommandContainer(AnswerCode.NAME_ALREADY_USED, "Server"));
                 return;
             }
             Client user = new Client(line, socket, false);
-            FindAgentSystem.addUser(user);
+            findAgentSystem.addUser(user);
             log.info("register new client", user);
             client = user;
             socket.send(new CommandContainer(line, false, "goodRegister"));
@@ -236,7 +245,7 @@ public class Controller {
         if (client != null) {
             if (client.isAgent()) {
                 if (client.getRecipient() != null) {
-                    if (FindAgentSystem.findSystem(client.getRecipient())) {
+                    if (findAgentSystem.findSystem(client.getRecipient())) {
                         client.getRecipient().getMysocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
                         client.getRecipient().getMysocket().updateBufferedMessage();
                         log.info("start conversation" + client.getRecipient().toString() + " " + client.getRecipient().getRecipient().toString());
@@ -245,18 +254,18 @@ public class Controller {
                         client.getRecipient().setRecipient(null);
                     }
                 }
-                FindAgentSystem.removeAgent(client);
+                findAgentSystem.removeAgent(client);
             } else {
                 if (client.getRecipient() != null) {
                     client.getRecipient().getMysocket().send(new CommandContainer(AnswerCode.CLIENT_LEAVE, "Server"));
-                    if (FindAgentSystem.findSystem(client.getRecipient())) {
+                    if (findAgentSystem.findSystem(client.getRecipient())) {
                         client.getRecipient().getRecipient().getMysocket().updateBufferedMessage();
                         log.info("start conversation" + client.toString() + " " + client.getRecipient().toString());
                     } else {
                         client.getRecipient().setRecipient(null);
                     }
                 }
-                FindAgentSystem.removeUser(client);
+                findAgentSystem.removeUser(client);
             }
             log.info("Client abort connection " + client.toString());
             client.setRecipient(null);

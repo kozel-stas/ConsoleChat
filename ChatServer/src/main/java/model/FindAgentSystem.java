@@ -1,4 +1,4 @@
-package com.touchsoft;
+package model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,16 +9,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FindAgentSystem {
-    private static Logger log = LoggerFactory.getLogger(com.touchsoft.FindAgentSystem.class);
-    private static final String url = "jdbc:derby:memory:ServerChatDB";
-    private static Connection connection;
-    private static PreparedStatement stmt;
-    private static ConcurrentLinkedQueue<Client> waitAgents = new ConcurrentLinkedQueue();
-    private static ConcurrentLinkedQueue<Client> waitUsers = new ConcurrentLinkedQueue();
-    private static CopyOnWriteArrayList<Client> users = new CopyOnWriteArrayList();
-    private static CopyOnWriteArrayList<Client> agents = new CopyOnWriteArrayList();
+    private static Logger log = LoggerFactory.getLogger(FindAgentSystem.class);
+    private final String url = "jdbc:derby:memory:ServerChatDB";
+    private Connection connection;
+    private PreparedStatement stmt;
+    private ConcurrentLinkedQueue<Client> waitAgents = new ConcurrentLinkedQueue();
+    private ConcurrentLinkedQueue<Client> waitUsers = new ConcurrentLinkedQueue();
+    private CopyOnWriteArrayList<Client> users = new CopyOnWriteArrayList();
+    private CopyOnWriteArrayList<Client> agents = new CopyOnWriteArrayList();
 
-    public static void createDatabase() {
+    public void createDatabase() {
         try {
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
             connection = DriverManager.getConnection(url + ";create=true");
@@ -35,7 +35,7 @@ public class FindAgentSystem {
         }
     }
 
-    public static void dropDatabase() {
+    public void dropDatabase() {
         try {
             connection = DriverManager.getConnection(url + ";drop=true");
         } catch (SQLException e) {
@@ -43,7 +43,7 @@ public class FindAgentSystem {
         }
     }
 
-    public static boolean login(String name, String type) {
+    public boolean login(String name, String type) {
         if (findInDatabase(name, type)) {
             try {
                 stmt = connection.prepareStatement("DELETE FROM " + type + " WHERE name=?");
@@ -58,7 +58,7 @@ public class FindAgentSystem {
         }
     }
 
-    private static void addInDatabase(Client client, String type) {
+    private void addInDatabase(Client client, String type) {
         try {
             stmt = connection.prepareStatement("INSERT INTO " + type + "(name) VALUES (?)");
             stmt.setString(1, client.getName());
@@ -68,7 +68,7 @@ public class FindAgentSystem {
         }
     }
 
-    private static boolean findInDatabase(String name, String type) {
+    private boolean findInDatabase(String name, String type) {
         try {
             stmt = connection.prepareStatement("SELECT name FROM " + type + " WHERE name=?");
             stmt.setString(1, name);
@@ -82,7 +82,7 @@ public class FindAgentSystem {
 
     }
 
-    public static boolean findSystem(Client client) {
+    public boolean findSystem(Client client) {
         if (client.isAgent()) {
             if (waitUsers.size() > 0) {
                 synchronized (FindAgentSystem.class) {
@@ -117,7 +117,7 @@ public class FindAgentSystem {
         }
     }
 
-    public static boolean findUser(String name) {
+    public boolean findUser(String name) {
         Iterator iterator = users.iterator();
         while (iterator.hasNext()) {
             if (((Client) iterator.next()).getName().equals(name)) return true;
@@ -125,7 +125,7 @@ public class FindAgentSystem {
         return findInDatabase(name, "Client");
     }
 
-    public static boolean findAgent(String name) {
+    public boolean findAgent(String name) {
         Iterator iterator = agents.iterator();
         while (iterator.hasNext()) {
             if (((Client) iterator.next()).getName().equals(name)) return true;
@@ -133,27 +133,27 @@ public class FindAgentSystem {
         return findInDatabase(name, "Agent");
     }
 
-    public static void addUser(Client user) {
+    public void addUser(Client user) {
         users.add(user);
     }
 
-    public static void addAgent(Client agent) {
+    public void addAgent(Client agent) {
         agents.add(agent);
     }
 
-    public static void removeAgent(Client agent) {
+    public void removeAgent(Client agent) {
         waitAgents.remove(agent);
         agents.remove(agent);
         addInDatabase(agent, "Agent");
     }
 
-    public static void removeUser(Client user) {
+    public void removeUser(Client user) {
         waitUsers.remove(user);
         users.remove(user);
         addInDatabase(user, "Client");
     }
 
-    public static void clear() {
+    public void clear() {
         waitAgents.clear();
         waitUsers.clear();
         agents.clear();

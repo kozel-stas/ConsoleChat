@@ -1,0 +1,6 @@
+.idea
+ChatServer/target
+ChatServer/ChatServer.iml
+Client/target
+Client/Client.iml
+Client/myApp.log

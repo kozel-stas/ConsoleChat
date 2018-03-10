@@ -1,4 +1,4 @@
-package com.touchsoft;
+package ConsolePart;
 
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -134,7 +134,7 @@ class InputListener implements Runnable {
                 return;
             }
             if (container.getServerinfo() == AnswerCode.NEW_AGENT || container.getServerinfo() == AnswerCode.NEW_CLIENT) {
-                System.out.println(serverAnswer.get(container.getServerinfo()) + container.getName());
+                System.out.println(serverAnswer.get(container.getServerinfo())+" "+ container.getName());
                 return;
             }
             System.out.println(container.getName() + "     " + serverAnswer.get(container.getServerinfo()));

@@ -1,4 +1,6 @@
-package com.touchsoft;
+package model;
+
+import model.AnswerCode;
 
 public class CommandContainer {
 

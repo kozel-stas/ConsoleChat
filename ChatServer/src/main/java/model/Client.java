@@ -1,4 +1,6 @@
-package com.touchsoft;
+package model;
+
+import ConsolePart.SocketHandler;
 
 public class Client {
     private String name;
