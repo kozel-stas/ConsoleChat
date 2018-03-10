@@ -11,7 +11,7 @@
     <title>Title</title>
 </head>
 <body>
-<<textarea name="textArea" id="" cols="30" rows="10">
+<textarea name="textArea" id="textArea" cols="30" rows="10">
 
 </textarea>
 <form name="publish">
@@ -20,20 +20,20 @@
 </form>
 
 <script>
-    var socket = new WebSocket("ws://"+location.host+"/websocket");
+    var socket = new WebSocket("ws://" + location.host + "/websocket");
 
     // отправить сообщение из формы publish
-    document.forms.publish.onsubmit = function() {
+    document.forms.publish.onsubmit = function () {
         var outgoingMessage = this.message.value;
         socket.send(outgoingMessage);
-        this.message.value="";
+        this.message.value = "";
         return false;
     };
 
     // обработчик входящих сообщений
-    socket.onmessage = function(event) {
+    socket.onmessage = function (event) {
         var incomingMessage = event.data;
-        showMessage(incomingMessage);
+        document.getElementById('textArea').value += incomingMessage + '\n';
     };
 
 

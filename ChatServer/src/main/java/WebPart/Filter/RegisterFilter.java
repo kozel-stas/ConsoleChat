@@ -51,10 +51,10 @@ public class RegisterFilter implements Filter {
                     request.getRequestDispatcher(pathChatPage).forward(request, response);
                 }
             } else if ("Client".equals(typeUser)) {
-                if (findAgentSystem.findUser(login)) {
+                if (findAgentSystem.findClient(login)) {
 
                 } else {
-                    findAgentSystem.addUser(new Client(login, null, false));
+                    findAgentSystem.addClient(new Client(login, null, false));
                     request.getSession().setAttribute("login", login);
                     request.getSession().setAttribute("typeUser", typeUser);
                     request.getRequestDispatcher(pathChatPage).forward(request, response);

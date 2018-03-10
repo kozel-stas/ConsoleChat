@@ -39,9 +39,9 @@ public class InMemoryDatabaseTest {
     @Test
     public void addClientOnDatabase() {
         client = new Client("stas", socketHandlerClient, false);
-        findAgentSystem.addUser(client);
-        findAgentSystem.removeUser(client);
-        Assert.assertTrue(findAgentSystem.findUser("stas"));
+        findAgentSystem.addClient(client);
+        findAgentSystem.removeClient(client);
+        Assert.assertTrue(findAgentSystem.findClient("stas"));
     }
 
     @Test
@@ -55,8 +55,8 @@ public class InMemoryDatabaseTest {
     @Test
     public void addClientOnDatabaseFindAgent() {
         client = new Client("stas", socketHandlerClient, false);
-        findAgentSystem.addUser(client);
-        findAgentSystem.removeUser(client);
+        findAgentSystem.addClient(client);
+        findAgentSystem.removeClient(client);
         Assert.assertFalse(findAgentSystem.findAgent("stas"));
     }
 
@@ -65,7 +65,7 @@ public class InMemoryDatabaseTest {
         agent = new Client("stas", socketHandlerClient, true);
         findAgentSystem.addAgent(agent);
         findAgentSystem.removeAgent(agent);
-        Assert.assertFalse(findAgentSystem.findUser("stas"));
+        Assert.assertFalse(findAgentSystem.findClient("stas"));
     }
 
     @Test
@@ -73,15 +73,15 @@ public class InMemoryDatabaseTest {
         agent = new Client("stas", socketHandlerClient, true);
         findAgentSystem.addAgent(agent);
         findAgentSystem.removeAgent(agent);
-        Assert.assertTrue(findAgentSystem.login("stas", "Agent"));
+        Assert.assertTrue(findAgentSystem.authorize("stas", "Agent"));
     }
 
     @Test
     public void loginDatabaseClient() {
         client = new Client("stas", socketHandlerClient, true);
-        findAgentSystem.addUser(client);
-        findAgentSystem.removeUser(client);
-        Assert.assertTrue(findAgentSystem.login("stas", "Client"));
+        findAgentSystem.addClient(client);
+        findAgentSystem.removeClient(client);
+        Assert.assertTrue(findAgentSystem.authorize("stas", "Client"));
     }
 
 }

@@ -4,8 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FindAgentSystem {
@@ -15,8 +19,8 @@ public class FindAgentSystem {
     private PreparedStatement stmt;
     private ConcurrentLinkedQueue<Client> waitAgents = new ConcurrentLinkedQueue();
     private ConcurrentLinkedQueue<Client> waitUsers = new ConcurrentLinkedQueue();
-    private CopyOnWriteArrayList<Client> users = new CopyOnWriteArrayList();
-    private CopyOnWriteArrayList<Client> agents = new CopyOnWriteArrayList();
+    private ConcurrentMap<String,Client> users = new ConcurrentHashMap();
+    private ConcurrentMap<String,Client> agents = new ConcurrentHashMap();
 
     public void createDatabase() {
         try {
@@ -43,7 +47,7 @@ public class FindAgentSystem {
         }
     }
 
-    public boolean login(String name, String type) {
+    public boolean authorize (String name, String type) {
         if (findInDatabase(name, type)) {
             try {
                 stmt = connection.prepareStatement("DELETE FROM " + type + " WHERE name=?");
@@ -117,39 +121,35 @@ public class FindAgentSystem {
         }
     }
 
-    public boolean findUser(String name) {
-        Iterator iterator = users.iterator();
-        while (iterator.hasNext()) {
-            if (((Client) iterator.next()).getName().equals(name)) return true;
-        }
+    public boolean findClient(String name) {
+        if(users.get(name)!=null)
+            return true;
         return findInDatabase(name, "Client");
     }
 
     public boolean findAgent(String name) {
-        Iterator iterator = agents.iterator();
-        while (iterator.hasNext()) {
-            if (((Client) iterator.next()).getName().equals(name)) return true;
-        }
+        if(agents.get(name)!=null)
+            return true;
         return findInDatabase(name, "Agent");
     }
 
-    public void addUser(Client user) {
-        users.add(user);
+    public void addClient(Client user) {
+        users.put(user.getName(),user);
     }
 
     public void addAgent(Client agent) {
-        agents.add(agent);
+        agents.put(agent.getName(),agent);
     }
 
     public void removeAgent(Client agent) {
         waitAgents.remove(agent);
-        agents.remove(agent);
+        agents.remove(agent.getName(),agent);
         addInDatabase(agent, "Agent");
     }
 
-    public void removeUser(Client user) {
+    public void removeClient(Client user) {
         waitUsers.remove(user);
-        users.remove(user);
+        users.remove(user.getName(),user);
         addInDatabase(user, "Client");
     }
 
@@ -160,4 +160,9 @@ public class FindAgentSystem {
         users.clear();
     }
 
+    public Client getUser(String name,boolean isAgent){
+        if(isAgent)
+            return agents.get(name);
+        else return users.get(name);
+    }
 }

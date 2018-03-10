@@ -1,16 +1,20 @@
 package ConsolePart;
 
 import com.google.gson.Gson;
+import model.ChatInterface;
 import model.CommandContainer;
 import model.FindAgentSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.IOException;
 import java.net.Socket;
 
 
-public class SocketHandler implements Runnable {
+public class SocketHandler implements Runnable, ChatInterface {
     private Logger log = LoggerFactory.getLogger(SocketHandler.class);
     private Socket connect;
     private BufferedReader input;
@@ -19,14 +23,14 @@ public class SocketHandler implements Runnable {
     private FindAgentSystem findAgentSystem;
     private Gson json;
 
-    public SocketHandler(Socket connect, FindAgentSystem findAgentSystem){
-        this.findAgentSystem=findAgentSystem;
+    public SocketHandler(Socket connect, FindAgentSystem findAgentSystem) {
+        this.findAgentSystem = findAgentSystem;
         this.connect = connect;
         try {
             input = new BufferedReader(new InputStreamReader(connect.getInputStream(), "UTF-8"));
             output = new BufferedWriter(new OutputStreamWriter(connect.getOutputStream(), "UTF-8"));
         } catch (IOException e) {
-            log.error("IOException in start SocketHandler",e);
+            log.error("IOException in start SocketHandler", e);
         }
         controller = new Controller(this);
         json = new Gson();
@@ -61,7 +65,11 @@ public class SocketHandler implements Runnable {
         controller.updateBufferedMessage();
     }
 
-    protected void close() {
+    public void send(CommandContainer container){
+        send(json.toJson(container));
+    }
+    @Override
+    public void close() {
         if (!connect.isClosed()) {
             try {
                 controller.leave();
@@ -71,16 +79,18 @@ public class SocketHandler implements Runnable {
             }
         }
     }
-
-    synchronized public void send(CommandContainer container) {
+    @Override
+    public void send(String msg) {
         if (!connect.isClosed()) {
-            try {
-                output.write(json.toJson(container));
-                output.write("\n");
-                output.flush();
-            } catch (IOException ex) {
-                close();
-                log.error("Error sending message", ex);
+            synchronized (this) {
+                try {
+                    output.write(msg);
+                    output.write("\n");
+                    output.flush();
+                } catch (IOException ex) {
+                    close();
+                    log.error("Error sending message", ex);
+                }
             }
         }
     }
@@ -88,4 +98,5 @@ public class SocketHandler implements Runnable {
     public FindAgentSystem getFindAgentSystem() {
         return findAgentSystem;
     }
+
 }

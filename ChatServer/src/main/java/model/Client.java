@@ -8,8 +8,7 @@ public class Client {
     private SocketHandler mysocket;
     private boolean isAgent = false;
 
-    protected Client() {
-    }
+    private Client(){}
 
     public Client(String name) {
         this.name = name;
