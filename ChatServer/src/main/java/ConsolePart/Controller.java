@@ -108,7 +108,7 @@ public class Controller {
 
     private void handlerMessage(CommandContainer container) {
         if (client.getRecipient() != null) {
-            client.getRecipient().getMysocket().send(container);
+            client.getRecipient().getSocket().send(container);
         } else {
             if (client.isAgent()) socket.send(new CommandContainer(AnswerCode.DONT_HAVE_CLIENT, "Server"));
             else {
@@ -119,7 +119,7 @@ public class Controller {
                 } else {
                     if (findAgentSystem.findSystem(client)) {
                         log.info("start conversation " + client.toString() + " " + client.getRecipient().toString());
-                        client.getRecipient().getMysocket().send(container);
+                        client.getRecipient().getSocket().send(container);
                     } else {
                         bufferedMessage = new ArrayList<>();
                         bufferedMessage.add(container);
@@ -175,7 +175,7 @@ public class Controller {
             log.info("Login agent", agent);
             socket.send(new CommandContainer(line, true, "goodLogin"));
             if (findAgentSystem.findSystem(agent)) {
-                agent.getRecipient().getMysocket().updateBufferedMessage();
+                agent.getRecipient().getSocket().updateBufferedMessage();
                 log.info("start conversation" + agent.toString() + " " + agent.getRecipient().toString());
             }
             client = agent;
@@ -200,10 +200,10 @@ public class Controller {
             }
             Client agent = new Client(line, socket, true);
             findAgentSystem.addAgent(agent);
-            agent.getMysocket().send(new CommandContainer(line, true, "goodRegister"));
+            agent.getSocket().send(new CommandContainer(line, true, "goodRegister"));
             log.info("register new agent", agent);
             if (findAgentSystem.findSystem(agent)) {
-                agent.getRecipient().getMysocket().updateBufferedMessage();
+                agent.getRecipient().getSocket().updateBufferedMessage();
                 log.info("start conversation" + agent.toString() + " " + agent.getRecipient().toString());
             }
             client = agent;
@@ -228,7 +228,7 @@ public class Controller {
     protected void updateBufferedMessage() {
         if (bufferedMessage != null) {
             for (int i = 0; i < bufferedMessage.size(); i++)
-                client.getRecipient().getMysocket().send(bufferedMessage.get(i));
+                client.getRecipient().getSocket().send(bufferedMessage.get(i));
             bufferedMessage = null;
         }
     }
@@ -246,20 +246,20 @@ public class Controller {
             if (client.isAgent()) {
                 if (client.getRecipient() != null) {
                     if (findAgentSystem.findSystem(client.getRecipient())) {
-                        client.getRecipient().getMysocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
-                        client.getRecipient().getMysocket().updateBufferedMessage();
+                        client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
+                        client.getRecipient().getSocket().updateBufferedMessage();
                         log.info("start conversation" + client.getRecipient().toString() + " " + client.getRecipient().getRecipient().toString());
                     } else {
-                        client.getRecipient().getMysocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE_WAIT_NEW, "Server"));
+                        client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE_WAIT_NEW, "Server"));
                         client.getRecipient().setRecipient(null);
                     }
                 }
                 findAgentSystem.removeAgent(client);
             } else {
                 if (client.getRecipient() != null) {
-                    client.getRecipient().getMysocket().send(new CommandContainer(AnswerCode.CLIENT_LEAVE, "Server"));
+                    client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.CLIENT_LEAVE, "Server"));
                     if (findAgentSystem.findSystem(client.getRecipient())) {
-                        client.getRecipient().getRecipient().getMysocket().updateBufferedMessage();
+                        client.getRecipient().getRecipient().getSocket().updateBufferedMessage();
                         log.info("start conversation" + client.toString() + " " + client.getRecipient().toString());
                     } else {
                         client.getRecipient().setRecipient(null);

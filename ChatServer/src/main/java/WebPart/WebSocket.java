@@ -1,8 +1,7 @@
 package WebPart;
 
-import model.ChatInterface;
-import model.Client;
-import model.FindAgentSystem;
+import com.google.gson.Gson;
+import model.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -14,6 +13,8 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.OnMessage;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @ServerEndpoint(value = "/websocket",
         configurator = GetHttpSessionConfigurator.class)
@@ -22,50 +23,137 @@ public class WebSocket implements ChatInterface {
     private FindAgentSystem findAgentSystem;
     private HttpSession httpSession;
     private Client client;
+    private boolean waitAgent = false;
+    private List<CommandContainer> bufferedMessage;
+    private Gson json=new Gson();
 
     @OnOpen
     public void open(Session session, EndpointConfig config) {
         this.wsSession = session;
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-        ServletContext servletContext =httpSession.getServletContext();
+        ServletContext servletContext = httpSession.getServletContext();
         findAgentSystem = (FindAgentSystem) servletContext.getAttribute("findAgentSystem");
-        final String login = (String) httpSession.getAttribute("login");
-        final boolean isAgent = "Agent".equals((String) httpSession.getAttribute("typeUser"));
-        client = findAgentSystem.getUser(login,isAgent);
-        if (client!=null){
-            if (client.isAgent()){
-                if(findAgentSystem.findSystem(client))
-                    send("mk");
-            }
+        if (httpSession.getAttribute("isWork") == null) {
+            final String login = (String) httpSession.getAttribute("login");
+            final boolean isAgent = "Agent".equals((String) httpSession.getAttribute("typeUser"));
+            httpSession.setAttribute("isWork", true);
+            client = findAgentSystem.getUser(login, isAgent);
+            client.setSocket(this);
+            if (client != null) {
+                if (client.isAgent()) {
+                    if (findAgentSystem.findSystem(client)) {
+                        client.getRecipient().getSocket().updateBufferedMessage();
+                    }
+                } else {
+                    if(findAgentSystem.findSystem(client)){}
+                    else {
+                        bufferedMessage=new ArrayList<>();
+                        send(new CommandContainer(AnswerCode.NO_AGENT_WAIT, "Server"));
+                    }
+                }
+            } else close();
         } else close();
-        System.out.println("efef");
     }
 
     @OnMessage
     public void input(String msg) {
-        System.out.println(msg);
-        try {
-            wsSession.getBasicRemote().sendText(msg);
-        } catch (IOException e) {
-            e.printStackTrace();
+        CommandContainer commandContainer=new CommandContainer(client.getName(),client.isAgent(),msg);
+        if(client.getRecipient() !=null){
+            client.getRecipient().getSocket().send(commandContainer);
+        } else {
+            if(client.isAgent()) send(new CommandContainer(AnswerCode.DONT_HAVE_CLIENT, "Server"));
+            else if(waitAgent){
+                if(bufferedMessage==null) bufferedMessage=new ArrayList<>();
+                bufferedMessage.add(commandContainer);
+                send(new CommandContainer(AnswerCode.FIRST_AGENT_ANSWER_YOU, "Server"));
+            } else {
+                if(findAgentSystem.findSystem(client)){
+                    client.getRecipient().getSocket().send(commandContainer);
+                } else {
+                    bufferedMessage = new ArrayList<>();
+                    bufferedMessage.add(commandContainer);
+                    send(new CommandContainer(AnswerCode.NO_AGENT_WAIT, "Server"));
+                }
+            }
         }
-
     }
 
-    @Override
-    public void send(String msg) {
-        try {
-            wsSession.getBasicRemote().sendText(msg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     @OnClose
     public void close() {
-
+        leave();
+        if (wsSession.isOpen()) {
+            try {
+                wsSession.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
+    @OnError
+    public void error(Session session, Throwable t) {
+        leave();
+    }
+
+    @Override
+    public void send(CommandContainer commandContainer) {
+        try {
+            wsSession.getBasicRemote().sendText(json.toJson(commandContainer));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void notWaitAgent() {
+        waitAgent=false;
+    }
+
+    @Override
+    public void waitAgent() {
+        waitAgent=true;
+    }
+
+    @Override
+    public void updateBufferedMessage() {
+        if (bufferedMessage != null) {
+            for (CommandContainer commandContainer:bufferedMessage)
+                client.getRecipient().getSocket().send(commandContainer);
+            bufferedMessage = null;
+        }
+    }
+
+    private void leave() {
+        if (client != null) {
+            if (client.isAgent()) {
+                if (client.getRecipient() != null) {
+                    if (findAgentSystem.findSystem(client.getRecipient())) {
+                        client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
+                        client.getRecipient().getSocket().updateBufferedMessage();
+                    } else {
+                        client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE_WAIT_NEW, "Server"));
+                        client.getRecipient().setRecipient(null);
+                    }
+                }
+                findAgentSystem.removeAgent(client);
+                httpSession.removeAttribute("isWork");
+                httpSession.invalidate();
+            } else {
+                if (client.getRecipient() != null) {
+                    client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.CLIENT_LEAVE, "Server"));
+                    if (findAgentSystem.findSystem(client.getRecipient())) {
+                        client.getRecipient().getRecipient().getSocket().updateBufferedMessage();
+                    } else {
+                        client.getRecipient().setRecipient(null);
+                    }
+
+                }
+                findAgentSystem.removeClient(client);
+                httpSession.removeAttribute("isWork");
+                httpSession.invalidate();
+            }
+        }
+    }
 
 }

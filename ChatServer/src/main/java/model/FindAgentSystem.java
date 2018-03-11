@@ -93,9 +93,9 @@ public class FindAgentSystem {
                     Client user = waitUsers.poll();
                     user.setRecipient(client);
                     client.setRecipient(user);
-                    user.getMysocket().notWaitAgent();
-                    user.getMysocket().send(new CommandContainer(AnswerCode.NEW_AGENT, client.getName()));
-                    client.getMysocket().send(new CommandContainer(AnswerCode.NEW_CLIENT, user.getName()));
+                    user.getSocket().notWaitAgent();
+                    user.getSocket().send(new CommandContainer(AnswerCode.NEW_AGENT, client.getName()));
+                    client.getSocket().send(new CommandContainer(AnswerCode.NEW_CLIENT, user.getName()));
                 }
                 return true;
             } else {
@@ -108,13 +108,13 @@ public class FindAgentSystem {
                     Client agent = waitAgents.poll();
                     agent.setRecipient(client);
                     client.setRecipient(agent);
-                    client.getMysocket().notWaitAgent();
-                    client.getMysocket().send(new CommandContainer(AnswerCode.NEW_AGENT, agent.getName()));
-                    agent.getMysocket().send(new CommandContainer(AnswerCode.NEW_CLIENT, client.getName()));
+                    client.getSocket().notWaitAgent();
+                    client.getSocket().send(new CommandContainer(AnswerCode.NEW_AGENT, agent.getName()));
+                    agent.getSocket().send(new CommandContainer(AnswerCode.NEW_CLIENT, client.getName()));
                 }
                 return true;
             } else {
-                client.getMysocket().waitAgent();
+                client.getSocket().waitAgent();
                 waitUsers.add(client);
                 return false;
             }

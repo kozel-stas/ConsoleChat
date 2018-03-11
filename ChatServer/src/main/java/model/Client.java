@@ -5,7 +5,7 @@ import ConsolePart.SocketHandler;
 public class Client {
     private String name;
     private Client recipient;
-    private SocketHandler mysocket;
+    private ChatInterface mysocket;
     private boolean isAgent = false;
 
     private Client(){}
@@ -20,8 +20,12 @@ public class Client {
         this.mysocket = mysocket;
     }
 
-    public SocketHandler getMysocket() {
+    public ChatInterface getSocket() {
         return mysocket;
+    }
+
+    public void setSocket(ChatInterface chatInterface){
+        mysocket=chatInterface;
     }
 
     public boolean isAgent() {

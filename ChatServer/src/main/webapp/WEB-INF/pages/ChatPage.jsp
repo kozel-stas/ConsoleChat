@@ -33,7 +33,12 @@
     // обработчик входящих сообщений
     socket.onmessage = function (event) {
         var incomingMessage = event.data;
-        document.getElementById('textArea').value += incomingMessage + '\n';
+        var answer=JSON.parse(incomingMessage)
+        var name=answer.name;
+        var isAgent=answer.isAgent;
+        var message=answer.message;
+        var serverinfo=answer.serverinfo;
+        document.getElementById('textArea').value +=name+isAgent+message+serverinfo  + '\n';
     };
 
 

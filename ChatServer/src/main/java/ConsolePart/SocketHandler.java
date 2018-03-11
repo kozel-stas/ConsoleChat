@@ -79,7 +79,7 @@ public class SocketHandler implements Runnable, ChatInterface {
             }
         }
     }
-    @Override
+
     public void send(String msg) {
         if (!connect.isClosed()) {
             synchronized (this) {
