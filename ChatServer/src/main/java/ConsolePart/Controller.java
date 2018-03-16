@@ -30,7 +30,7 @@ public class Controller {
 
     public Controller(SocketHandler socket) {
         this.socket = socket;
-        findAgentSystem=socket.getFindAgentSystem();
+        findAgentSystem=FindAgentSystem.getInstance();
     }
 
     public void handler(CommandContainer container) {

@@ -15,7 +15,7 @@
 <div class="form">
     <%=request.getAttribute("answerCode")%>
     <h1>Вход в систему</h1><br>
-    <form method="post" action="/registerFilter">
+    <form method="post" action="/register">
         <input type="text" required placeholder="login" name="login"><br>
         <p><input type="radio" name="typeUser" value="Agent"> Агент </p>
         <p><input type="radio" name="typeUser" value="Client"> Клиент </p>
@@ -23,5 +23,6 @@
     </form>
 
 </div>
+
 </body>
 </html>

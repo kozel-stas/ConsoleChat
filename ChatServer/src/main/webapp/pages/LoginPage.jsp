@@ -14,13 +14,16 @@
 <div class="form">
 
     <h1>Вход в систему</h1><br>
-    <form method="post" action="">
+    <form method="post" action="autorizeFilter">
 
         <input type="text" required placeholder="login" name="login"><br>
-        <p><input type="radio" name="typeUser" value="Agent"> Агент </p>
+        <p><input checked type="radio" name="typeUser" value="Agent"> Агент </p>
         <p><input type="radio" name="typeUser" value="Client"> Клиент </p>
         <input class="button" type="submit" value="Войти">
     </form>
 </div>
+<script>
+
+</script>
 </body>
 </html>

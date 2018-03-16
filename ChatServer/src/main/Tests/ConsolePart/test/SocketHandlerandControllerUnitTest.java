@@ -25,7 +25,7 @@ public class SocketHandlerandControllerUnitTest {
 
     @BeforeClass
     public static void createFindAgentSystem() {
-        findAgentSystem = new FindAgentSystem();
+        findAgentSystem = FindAgentSystem.getInstance();
     }
 
     @Before
@@ -42,6 +42,7 @@ public class SocketHandlerandControllerUnitTest {
         outputStream.close();
         inputStream.close();
         findAgentSystem.dropDatabase();
+        findAgentSystem.clear();
     }
 
     @Test
@@ -49,7 +50,7 @@ public class SocketHandlerandControllerUnitTest {
         String line = gson.toJson(new CommandContainer("/register agent stas"));
         inputStream = new ByteArrayInputStream(line.getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         Assert.assertEquals(gson.toJson(new CommandContainer("stas", true, "goodRegister")) + "\n", outputStream.toString("UTF-8"));
     }
@@ -62,7 +63,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/register agent stas")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas", true, "goodRegister")));
@@ -77,7 +78,7 @@ public class SocketHandlerandControllerUnitTest {
         String line = gson.toJson(new CommandContainer("/register client stas"));
         inputStream = new ByteArrayInputStream(line.getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         Assert.assertEquals(gson.toJson(new CommandContainer("stas", false, "goodRegister")) + "\n", outputStream.toString("UTF-8"));
     }
@@ -90,7 +91,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/register client stas")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas", false, "goodRegister")));
@@ -106,7 +107,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/leave")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.NEED_REGISTER_OR_LOGIN, "Server")));
@@ -120,7 +121,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/ext")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.UNKNOWN_COMMAND, "Server")));
@@ -134,7 +135,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/exit")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.EXIT, "Server")));
@@ -148,7 +149,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/login client stas")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.DONT_HAVE_REGISTER_CLIENT, "Server")));
@@ -168,7 +169,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/register client stas ")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.UNKNOWN_TYPE_USER, "Server")));
@@ -190,7 +191,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/exit")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas", true, "goodRegister")));
@@ -208,7 +209,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/exit")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas", false, "goodRegister")));
@@ -224,7 +225,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("stas", true, "hello")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer(AnswerCode.NEED_REGISTER_OR_LOGIN, "Server")));
@@ -240,7 +241,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("stas", false, "Hello World")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas", false, "goodRegister")));
@@ -258,7 +259,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("stas", true, "Hello World")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas", true, "goodRegister")));
@@ -276,7 +277,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("stas", false, "Hello World")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas", true, "goodRegister")));
@@ -292,7 +293,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/register agent stas")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas", false, "goodRegister")));
@@ -308,7 +309,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/leave")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas", true, "goodRegister")));
@@ -326,7 +327,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/leave")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas", false, "goodRegister")));
@@ -346,7 +347,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/login client stas")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         stringBuilder = new StringBuilder("");
         stringBuilder.append(gson.toJson(new CommandContainer("stas", false, "goodRegister")));
@@ -368,7 +369,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/login client stas")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         //************************************************
         StringBuilder stringBuilder1 = new StringBuilder();
@@ -379,7 +380,7 @@ public class SocketHandlerandControllerUnitTest {
         when(socket1.isClosed()).thenReturn(false);
         ByteArrayInputStream inputStream1 = new ByteArrayInputStream(stringBuilder1.toString().getBytes("UTF-8"));
         when(socket1.getInputStream()).thenReturn(inputStream1);
-        SocketHandler testSocketHandler1 = new SocketHandler(socket1, findAgentSystem);
+        SocketHandler testSocketHandler1 = new SocketHandler(socket1);
         testSocketHandler1.run();
         //****************************************************
         stringBuilder1 = new StringBuilder("");
@@ -407,7 +408,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/login agent stas")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         //************************************************
         StringBuilder stringBuilder1 = new StringBuilder();
@@ -418,7 +419,7 @@ public class SocketHandlerandControllerUnitTest {
         when(socket1.isClosed()).thenReturn(false);
         ByteArrayInputStream inputStream1 = new ByteArrayInputStream(stringBuilder1.toString().getBytes("UTF-8"));
         when(socket1.getInputStream()).thenReturn(inputStream1);
-        SocketHandler testSocketHandler1 = new SocketHandler(socket1, findAgentSystem);
+        SocketHandler testSocketHandler1 = new SocketHandler(socket1);
         testSocketHandler1.run();
         //****************************************************
         stringBuilder1 = new StringBuilder("");
@@ -446,7 +447,7 @@ public class SocketHandlerandControllerUnitTest {
         stringBuilder.append(gson.toJson(new CommandContainer("/login agent stas")));
         inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
         when(socket.getInputStream()).thenReturn(inputStream);
-        testSocketHandler = new SocketHandler(socket, findAgentSystem);
+        testSocketHandler = new SocketHandler(socket);
         testSocketHandler.run();
         //************************************************
         StringBuilder stringBuilder1 = new StringBuilder();
@@ -457,7 +458,7 @@ public class SocketHandlerandControllerUnitTest {
         when(socket1.isClosed()).thenReturn(false);
         ByteArrayInputStream inputStream1 = new ByteArrayInputStream(stringBuilder1.toString().getBytes("UTF-8"));
         when(socket1.getInputStream()).thenReturn(inputStream1);
-        SocketHandler testSocketHandler1 = new SocketHandler(socket1, findAgentSystem);
+        SocketHandler testSocketHandler1 = new SocketHandler(socket1);
         testSocketHandler1.run();
         //****************************************************
         stringBuilder1 = new StringBuilder("");

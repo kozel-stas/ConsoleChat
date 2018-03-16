@@ -16,7 +16,7 @@ public class InMemoryDatabaseTest {
 
     @BeforeClass
     public static void createFindAgentSystem(){
-        findAgentSystem=new FindAgentSystem();
+        findAgentSystem=FindAgentSystem.getInstance();
     }
 
     @Before

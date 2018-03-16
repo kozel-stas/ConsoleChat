@@ -7,10 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class StartServlet extends HttpServlet {
-
+    private final String pathStartPage="/pages/StartPage.html";
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         response.setStatus(200);
-        request.getRequestDispatcher("/WEB-INF/pages/StartPage.jsp").forward(request, response);
+        request.getRequestDispatcher(pathStartPage).forward(request, response);
     }
 }

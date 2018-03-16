@@ -23,8 +23,8 @@ public class SocketHandler implements Runnable, ChatInterface {
     private FindAgentSystem findAgentSystem;
     private Gson json;
 
-    public SocketHandler(Socket connect, FindAgentSystem findAgentSystem) {
-        this.findAgentSystem = findAgentSystem;
+    public SocketHandler(Socket connect) {
+        this.findAgentSystem = FindAgentSystem.getInstance();
         this.connect = connect;
         try {
             input = new BufferedReader(new InputStreamReader(connect.getInputStream(), "UTF-8"));

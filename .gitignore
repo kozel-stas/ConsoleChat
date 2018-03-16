@@ -4,3 +4,5 @@ ChatServer/ChatServer.iml
 Client/target
 Client/Client.iml
 Client/myApp.log
+ChatServer/derby.log
+ChatServer/myApp.log

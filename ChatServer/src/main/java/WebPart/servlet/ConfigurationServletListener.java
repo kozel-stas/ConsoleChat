@@ -7,12 +7,7 @@ import model.FindAgentSystem;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import java.io.InputStreamReader;
-import java.io.FileNotFoundException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileInputStream;
+import java.io.*;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -21,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 public class ConfigurationServletListener implements ServletContextListener {
     private static Logger log = LoggerFactory.getLogger(ChatServer.class);
-    private final String nameModelAttribute = "findAgentSystem";
     private FindAgentSystem findAgentSystem;
     private ChatServer chatServer;
     private Map serverAnswer;
@@ -29,11 +23,10 @@ public class ConfigurationServletListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        config();
-        findAgentSystem = new FindAgentSystem();
+       // config();
+        findAgentSystem=FindAgentSystem.getInstance();
         findAgentSystem.createDatabase();
-        new Thread(chatServer = new ChatServer(numberPort, findAgentSystem)).start();
-        servletContextEvent.getServletContext().setAttribute(nameModelAttribute, findAgentSystem);
+        new Thread(chatServer = new ChatServer(numberPort)).start();
     }
 
     @Override
@@ -43,7 +36,7 @@ public class ConfigurationServletListener implements ServletContextListener {
     }
 
     private void config() {
-        final String PATH = "../resources/config.txt";
+        final String PATH = "tar.txt";
         serverAnswer = new EnumMap(AnswerCode.class);
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(PATH))))) {
             String line = fileReader.readLine();

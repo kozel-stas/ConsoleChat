@@ -23,7 +23,7 @@ public class ChatServer implements Runnable {
     private boolean isClosed=false;
     private List<SocketHandler> setSocketHandler=new ArrayList();
 
-    public ChatServer(int port,FindAgentSystem findAgentSystem){
+    public ChatServer(int port){
         this.port = port;
         try {
             server = new ServerSocket(port);
@@ -31,10 +31,10 @@ public class ChatServer implements Runnable {
             log.error("Server isn't start",e);
         }
         log.info("Start server port=" + port);
-        this.findAgentSystem=findAgentSystem;
+        this.findAgentSystem=FindAgentSystem.getInstance();
     }
 
-    public ChatServer(FindAgentSystem findAgentSystem)  {
+    public ChatServer()  {
         this.port = 8080;
         try {
             server = new ServerSocket(this.port);
@@ -42,7 +42,7 @@ public class ChatServer implements Runnable {
             log.error("Server isn't start",e);
         }
         log.info("Start server port=" + port);
-        this.findAgentSystem=findAgentSystem;
+        this.findAgentSystem=FindAgentSystem.getInstance();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ChatServer implements Runnable {
                 log.error("IOException in accept connection",e);
             }
             if (connect != null) {
-                SocketHandler client = new SocketHandler(connect,findAgentSystem);
+                SocketHandler client = new SocketHandler(connect);
                 setSocketHandler.add(client);
                 new Thread(client).start();
                 log.info("new client connect", client);

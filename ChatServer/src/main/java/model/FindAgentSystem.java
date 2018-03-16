@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FindAgentSystem {
+    private static FindAgentSystem findAgentSystem=null;
     private static Logger log = LoggerFactory.getLogger(FindAgentSystem.class);
     private final String url = "jdbc:derby:memory:ServerChatDB";
     private Connection connection;
@@ -21,6 +22,14 @@ public class FindAgentSystem {
     private ConcurrentLinkedQueue<Client> waitUsers = new ConcurrentLinkedQueue();
     private ConcurrentMap<String,Client> users = new ConcurrentHashMap();
     private ConcurrentMap<String,Client> agents = new ConcurrentHashMap();
+
+    public static synchronized FindAgentSystem getInstance (){
+       if(findAgentSystem==null){
+           findAgentSystem=new FindAgentSystem();
+       } return findAgentSystem;
+    }
+
+    private FindAgentSystem(){}
 
     public void createDatabase() {
         try {
@@ -162,7 +171,19 @@ public class FindAgentSystem {
 
     public Client getUser(String name,boolean isAgent){
         if(isAgent)
-            return agents.get(name);
-        else return users.get(name);
+            if(agents.get(name)==null){
+                if(authorize(name,"Agent")){
+                    Client client=new Client(name,null,isAgent);
+                    addAgent(client);
+                    return client;
+                } else return null;
+            } else return agents.get(name);
+        else if(users.get(name)==null){
+            if(authorize(name,"Client")){
+                Client client=new Client(name,null,isAgent);
+                addClient(client);
+                return client;
+            } else return null;
+        } else return users.get(name);
     }
 }

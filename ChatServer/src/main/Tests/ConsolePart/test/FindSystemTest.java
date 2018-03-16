@@ -22,14 +22,9 @@ public class FindSystemTest {
     private CommandContainer answerAgent;
     private CommandContainer answerClient;
 
-    @BeforeClass
-    public static void createFindAgentSystem(){
-        findAgentSystem=new FindAgentSystem();
-    }
-
     @Before
     public void init() {
-        findAgentSystem=new FindAgentSystem();
+        findAgentSystem=FindAgentSystem.getInstance();
         socketHandlerAgent = mock(SocketHandler.class);
         socketHandlerClient = mock(SocketHandler.class);
         doAnswer((Answer) invocation -> {
