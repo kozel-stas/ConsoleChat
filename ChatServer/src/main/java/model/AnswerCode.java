@@ -39,9 +39,9 @@ public enum AnswerCode {
         Value = value;
     }
 
-    public static AnswerCode getEnumByInt(int code){
-        for(AnswerCode answerCode: AnswerCode.values())
-            if(code==answerCode.Value) return answerCode;
+    public static AnswerCode getEnumByInt(int code) {
+        for (AnswerCode answerCode : AnswerCode.values())
+            if (code == answerCode.Value) return answerCode;
         return null;
     }
 }

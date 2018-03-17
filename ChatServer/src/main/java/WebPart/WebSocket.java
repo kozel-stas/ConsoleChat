@@ -41,7 +41,7 @@ public class WebSocket implements ChatInterface {
         findAgentSystem = FindAgentSystem.getInstance();
         final String login = (String) httpSession.getAttribute("login");
         final boolean isAgent = "Agent".equals((String) httpSession.getAttribute("typeUser"));
-        if(login!=null) {
+        if (login != null) {
             httpSession.setAttribute("isWork", true);
             client = findAgentSystem.getUser(login, isAgent);
             if (client != null) {
@@ -51,7 +51,8 @@ public class WebSocket implements ChatInterface {
                         client.getRecipient().getSocket().updateBufferedMessage();
                     }
                 } else {
-                    if (findAgentSystem.findSystem(client)) {} else {
+                    if (findAgentSystem.findSystem(client)) {
+                    } else {
                         bufferedMessage = new ArrayList<>();
                         send(new CommandContainer(AnswerCode.NO_AGENT_WAIT, "Server"));
                     }
@@ -63,9 +64,11 @@ public class WebSocket implements ChatInterface {
 
     @OnMessage
     public void input(String msg) {
-        if("LEAVE".equals(msg)){
-            send(new CommandContainer(AnswerCode.LEAVE_CHAT, "Server"));
-            leave();
+        if ("LEAVE".equals(msg)) {
+            if(client.getRecipient()!=null) {
+                send(new CommandContainer(AnswerCode.LEAVE_CHAT, "Server"));
+                leave();
+            } else send(new CommandContainer(AnswerCode.DONT_HAVE_CHAT, "Server"));
         } else {
             CommandContainer commandContainer = new CommandContainer(client.getName(), client.isAgent(), msg);
             if (client.getRecipient() != null) {
@@ -106,15 +109,16 @@ public class WebSocket implements ChatInterface {
     @OnError
     public void error(Session session, Throwable t) {
         leave();
+        findAgentSystem.remove(client);
         changeWorkAttribute();
         log.error("Error in webSocket", t);
     }
 
-    private void changeWorkAttribute(){
+    private void changeWorkAttribute() {
         try {
             httpSession.removeAttribute("isWork");
-        } catch (IllegalStateException ex){
-            log.info("invalid session",ex);
+        } catch (IllegalStateException ex) {
+            log.info("invalid session", ex);
         }
     }
 

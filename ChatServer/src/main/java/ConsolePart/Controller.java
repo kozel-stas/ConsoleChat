@@ -30,7 +30,7 @@ public class Controller {
 
     public Controller(SocketHandler socket) {
         this.socket = socket;
-        findAgentSystem=FindAgentSystem.getInstance();
+        findAgentSystem = FindAgentSystem.getInstance();
     }
 
     public void handler(CommandContainer container) {
@@ -189,7 +189,7 @@ public class Controller {
             socket.send(new CommandContainer(AnswerCode.UNKNOWN_TYPE_USER, "Server"));
             log.warn("unknown type of user", command);
         }
-    }//регистрация
+    }
 
     private void regAgent(String command) {
         if (registerOrLoginAgentOrClientPattern.matcher(command.toString()).find()) {
@@ -208,7 +208,7 @@ public class Controller {
             }
             client = agent;
         } else socket.send(new CommandContainer(AnswerCode.INVALID_CHARACTERS, "Server"));
-    }//регистрация агента
+    }
 
     private void regUser(String command) {
         if (registerOrLoginAgentOrClientPattern.matcher(command.toString()).find()) {
@@ -223,7 +223,7 @@ public class Controller {
             client = user;
             socket.send(new CommandContainer(line, false, "goodRegister"));
         } else socket.send(new CommandContainer(AnswerCode.INVALID_CHARACTERS, "Server"));
-    }//регистрация клиента
+    }
 
     protected void updateBufferedMessage() {
         if (bufferedMessage != null) {
@@ -241,12 +241,12 @@ public class Controller {
         waitAgent = false;
     }
 
-    public void close(){
+    public void close() {
         findAgentSystem.remove(client);
         leave();
     }
 
-    public void leave() {
+    private void leave() {
         if (client != null) {
             if (client.isAgent()) {
                 if (client.getRecipient() != null) {
@@ -273,5 +273,5 @@ public class Controller {
             log.info("Client abort connection " + client.toString());
             client.setRecipient(null);
         } else log.info("Client abort connection unknown client");
-    }//процесс корректного закрытия
+    }
 }

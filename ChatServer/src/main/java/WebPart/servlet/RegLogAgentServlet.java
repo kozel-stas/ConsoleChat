@@ -13,28 +13,24 @@ import java.io.IOException;
 
 public class RegLogAgentServlet extends HttpServlet {
     private FindAgentSystem findAgentSystem;
-    private String pathRegisterPage;
-    private String addressChatPage;
-    private String addressRegLogAgent;
-    private String loginAttribute;
-    private String typeUserAttribute;
+    private final String pathRegisterPage = "/pages/RegLogAgent.jsp";
+    private final String addressChatPage = "/chat";
+    private final String addressRegLogAgent = "/regLogAgent";
+    private final String loginAttribute = "login";
+    private final String typeUserAttribute = "typeUser";
+    private final String typeUser = "Agent";
 
     @Override
     public void init() throws ServletException {
         super.init();
         findAgentSystem = FindAgentSystem.getInstance();
-        pathRegisterPage = "/pages/RegLogAgent.jsp";
-        addressChatPage = "/chat";
-        addressRegLogAgent = "/regLogAgent";
-        loginAttribute = "login";
-        typeUserAttribute = "typeUser";
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         response.setStatus(200);
-        HttpSession httpSession=request.getSession();
-        if(httpSession!=null && httpSession.getAttribute(loginAttribute)!=null && httpSession.getAttribute(typeUserAttribute)!=null)
+        HttpSession httpSession = request.getSession();
+        if (httpSession != null && httpSession.getAttribute(loginAttribute) != null && httpSession.getAttribute(typeUserAttribute) != null)
             response.sendRedirect("/");
         else request.getRequestDispatcher(pathRegisterPage).forward(request, response);
     }
@@ -43,9 +39,9 @@ public class RegLogAgentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final HttpSession session = request.getSession();
         final String login = request.getParameter(loginAttribute);
-        final String typeOperation=request.getParameter("typeOperation");
-        if (login != null && typeOperation!=null) {
-            String nameAnswerCode = "answerCode";
+        final String typeOperation = request.getParameter("typeOperation");
+        if (login != null && typeOperation != null) {
+            final String nameAnswerCode = "answerCode";
             if ("register".equals(typeOperation)) {
                 if (findAgentSystem.findAgent(login)) {
                     request.setAttribute(nameAnswerCode, AnswerCode.NAME_ALREADY_USED);
@@ -53,11 +49,11 @@ public class RegLogAgentServlet extends HttpServlet {
                 } else {
                     findAgentSystem.addAgent(new Client(login, null, true));
                     request.getSession().setAttribute(loginAttribute, login);
-                    request.getSession().setAttribute(typeUserAttribute, "Agent");
+                    request.getSession().setAttribute(typeUserAttribute, typeUser);
                     response.sendRedirect(addressChatPage);
                 }
             } else if ("login".equals(typeOperation)) {
-                if (!findAgentSystem.authorize(login, "Agent")) {
+                if (!findAgentSystem.authorize(login, typeUser)) {
                     if (findAgentSystem.findAgent(login)) {
                         request.setAttribute(nameAnswerCode, AnswerCode.AGENT_ONLINE_YET);
                         request.getRequestDispatcher(pathRegisterPage).forward(request, response);
@@ -68,7 +64,7 @@ public class RegLogAgentServlet extends HttpServlet {
                 } else {
                     findAgentSystem.addAgent(new Client(login, null, true));
                     request.getSession().setAttribute(loginAttribute, login);
-                    request.getSession().setAttribute(typeUserAttribute, "Agent");
+                    request.getSession().setAttribute(typeUserAttribute, typeUser);
                     response.sendRedirect(addressChatPage);
                 }
             } else response.sendRedirect(addressRegLogAgent);
@@ -76,27 +72,3 @@ public class RegLogAgentServlet extends HttpServlet {
     }
 }
 
-//if (login != null && typeUser != null) {
-//        String nameAnswerCode = "answerCode";
-//        if ("Agent".equals(typeUser)) {
-//        if (findAgentSystem.findAgent(login)) {
-//        request.setAttribute(nameAnswerCode, AnswerCode.NAME_ALREADY_USED);
-//        request.getRequestDispatcher(pathRegisterPage).forward(request, response);
-//        } else {
-//        findAgentSystem.addAgent(new Client(login, null, true));
-//        request.getSession().setAttribute(loginAttribute, login);
-//        request.getSession().setAttribute(typeUserAttribute, typeUser);
-//        response.sendRedirect(addressChatPage);
-//        }
-//        } else if ("Client".equals(typeUser)) {
-//        if (findAgentSystem.findClient(login)) {
-//        request.setAttribute(nameAnswerCode, AnswerCode.NAME_ALREADY_USED);
-//        request.getRequestDispatcher(pathRegisterPage).forward(request, response);
-//        } else {
-//        findAgentSystem.addClient(new Client(login, null, false));
-//        request.getSession().setAttribute(loginAttribute, login);
-//        request.getSession().setAttribute(typeUserAttribute, typeUser);
-//        response.sendRedirect(addressChatPage);
-//        }
-//        } else response.sendRedirect(addressRegisterPage);
-//        } else response.sendRedirect(addressRegisterPage);

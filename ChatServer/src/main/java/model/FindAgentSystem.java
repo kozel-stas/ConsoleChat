@@ -13,23 +13,25 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FindAgentSystem {
-    private static FindAgentSystem findAgentSystem=null;
+    private static FindAgentSystem findAgentSystem = null;
     private static Logger log = LoggerFactory.getLogger(FindAgentSystem.class);
     private final String url = "jdbc:derby:memory:ServerChatDB";
     private Connection connection;
     private PreparedStatement stmt;
     private ConcurrentLinkedQueue<Client> waitAgents = new ConcurrentLinkedQueue();
     private ConcurrentLinkedQueue<Client> waitUsers = new ConcurrentLinkedQueue();
-    private ConcurrentMap<String,Client> users = new ConcurrentHashMap();
-    private ConcurrentMap<String,Client> agents = new ConcurrentHashMap();
+    private ConcurrentMap<String, Client> users = new ConcurrentHashMap();
+    private ConcurrentMap<String, Client> agents = new ConcurrentHashMap();
 
-    public static synchronized FindAgentSystem getInstance (){
-       if(findAgentSystem==null){
-           findAgentSystem=new FindAgentSystem();
-       } return findAgentSystem;
+    public static synchronized FindAgentSystem getInstance() {
+        if (findAgentSystem == null) {
+            findAgentSystem = new FindAgentSystem();
+        }
+        return findAgentSystem;
     }
 
-    private FindAgentSystem(){}
+    private FindAgentSystem() {
+    }
 
     public void createDatabase() {
         try {
@@ -56,7 +58,7 @@ public class FindAgentSystem {
         }
     }
 
-    public boolean authorize (String name, String type) {
+    public boolean authorize(String name, String type) {
         if (findInDatabase(name, type)) {
             try {
                 stmt = connection.prepareStatement("DELETE FROM " + type + " WHERE name=?");
@@ -131,39 +133,39 @@ public class FindAgentSystem {
     }
 
     public boolean findClient(String name) {
-        if(users.get(name)!=null)
+        if (users.get(name) != null)
             return true;
         return findInDatabase(name, "Client");
     }
 
     public boolean findAgent(String name) {
-        if(agents.get(name)!=null)
+        if (agents.get(name) != null)
             return true;
         return findInDatabase(name, "Agent");
     }
 
     public void addClient(Client user) {
-        users.put(user.getName(),user);
+        users.put(user.getName(), user);
     }
 
     public void addAgent(Client agent) {
-        agents.put(agent.getName(),agent);
+        agents.put(agent.getName(), agent);
     }
 
     private void removeAgent(Client agent) {
         waitAgents.remove(agent);
-        agents.remove(agent.getName(),agent);
+        agents.remove(agent.getName(), agent);
         addInDatabase(agent, "Agent");
     }
 
     private void removeClient(Client user) {
         waitUsers.remove(user);
-        users.remove(user.getName(),user);
+        users.remove(user.getName(), user);
         addInDatabase(user, "Client");
     }
 
-    public void remove (Client client){
-        if(client.isAgent())
+    public void remove(Client client) {
+        if (client.isAgent())
             removeAgent(client);
         else removeClient(client);
     }
@@ -175,18 +177,18 @@ public class FindAgentSystem {
         users.clear();
     }
 
-    public Client getUser(String name,boolean isAgent){
-        if(isAgent)
-            if(agents.get(name)==null){
-                if(authorize(name,"Agent")){
-                    Client client=new Client(name,null,isAgent);
+    public Client getUser(String name, boolean isAgent) {
+        if (isAgent)
+            if (agents.get(name) == null) {
+                if (authorize(name, "Agent")) {
+                    Client client = new Client(name, null, isAgent);
                     addAgent(client);
                     return client;
                 } else return null;
             } else return agents.get(name);
-        else if(users.get(name)==null){
-            if(authorize(name,"Client")){
-                Client client=new Client(name,null,isAgent);
+        else if (users.get(name) == null) {
+            if (authorize(name, "Client")) {
+                Client client = new Client(name, null, isAgent);
                 addClient(client);
                 return client;
             } else return null;

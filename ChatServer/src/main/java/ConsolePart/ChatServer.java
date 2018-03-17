@@ -18,42 +18,38 @@ public class ChatServer implements Runnable {
     private static Logger log = LoggerFactory.getLogger(ChatServer.class);
     private int port;
     private ServerSocket server;
-    private Map<AnswerCode, String> serverAnswer;
-    private FindAgentSystem findAgentSystem;
-    private boolean isClosed=false;
-    private List<SocketHandler> setSocketHandler=new ArrayList();
+    private boolean isClosed = false;
+    private List<SocketHandler> setSocketHandler = new ArrayList();
 
-    public ChatServer(int port){
+    public ChatServer(int port) {
         this.port = port;
         try {
             server = new ServerSocket(port);
         } catch (IOException e) {
-            log.error("Server isn't start",e);
+            log.error("Server isn't start", e);
         }
         log.info("Start server port=" + port);
-        this.findAgentSystem=FindAgentSystem.getInstance();
     }
 
-    public ChatServer()  {
+    public ChatServer() {
         this.port = 8080;
         try {
             server = new ServerSocket(this.port);
         } catch (IOException e) {
-            log.error("Server isn't start",e);
+            log.error("Server isn't start", e);
         }
         log.info("Start server port=" + port);
-        this.findAgentSystem=FindAgentSystem.getInstance();
     }
 
     @Override
-    public void run()  {
+    public void run() {
         log.info("Start listener");
         while (!isClosed) {
             Socket connect = null;
             try {
                 connect = server.accept();
             } catch (IOException e) {
-                log.error("IOException in accept connection",e);
+                log.error("IOException in accept connection", e);
             }
             if (connect != null) {
                 SocketHandler client = new SocketHandler(connect);
@@ -64,9 +60,9 @@ public class ChatServer implements Runnable {
         }
     }
 
-    public void close(){
-        isClosed=true;
-        for(SocketHandler socketHandler: setSocketHandler)
+    public void close() {
+        isClosed = true;
+        for (SocketHandler socketHandler : setSocketHandler)
             socketHandler.close();
     }
 

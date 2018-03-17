@@ -12,11 +12,11 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class SkipFilter implements Filter {
-    private final String loginAttribute  = "login";
-    private final String typeUserAttribute= "typeUser";
+    private final String loginAttribute = "login";
+    private final String typeUserAttribute = "typeUser";
     private final String isChatAttribute = "isWork";
     private final String addressStartPage = "/start";
-    private final String addressChatPage="/chat";
+    private final String addressChatPage = "/chat";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

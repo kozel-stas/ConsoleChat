@@ -8,7 +8,8 @@ public class Client {
     private ChatInterface mysocket;
     private boolean isAgent = false;
 
-    private Client(){}
+    private Client() {
+    }
 
     public Client(String name) {
         this.name = name;
@@ -24,8 +25,8 @@ public class Client {
         return mysocket;
     }
 
-    public void setSocket(ChatInterface chatInterface){
-        mysocket=chatInterface;
+    public void setSocket(ChatInterface chatInterface) {
+        mysocket = chatInterface;
     }
 
     public boolean isAgent() {

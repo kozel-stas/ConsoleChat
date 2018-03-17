@@ -1,12 +1,12 @@
 package ConsolePart;
 
 import com.google.gson.Gson;
-import model.AnswerCode;
 import model.ChatInterface;
 import model.CommandContainer;
 import model.FindAgentSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -37,7 +37,6 @@ public class SocketHandler implements Runnable, ChatInterface {
         json = new Gson();
     }
 
-    //прием сообщений и корректное закрытие и синхронизированный send;
     public void run() {
         CommandContainer command;
         while (!connect.isClosed()) {
@@ -66,14 +65,15 @@ public class SocketHandler implements Runnable, ChatInterface {
         controller.updateBufferedMessage();
     }
 
-    public void send(CommandContainer container){
+    public void send(CommandContainer container) {
         send(json.toJson(container));
     }
+
     @Override
     public void close() {
         if (!connect.isClosed()) {
             try {
-                controller.leave();
+                controller.close();
                 connect.close();
             } catch (IOException ex) {
                 log.error("Error closing connection", ex);
