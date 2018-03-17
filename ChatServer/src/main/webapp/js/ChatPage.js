@@ -86,7 +86,7 @@ $(document).ready(function () {
             case 'NEW_CLIENT':
                 var answerMessage='Вы подключены к клиенту';
                 document.getElementById('textArea').value += answerMessage+" ";
-                document.getElementById('textArea').value += name + +'\n';
+                document.getElementById('textArea').value += name +'\n';
                 break;
             case 'NEW_AGENT':
                 var answerMessage='К вам подключился агент';

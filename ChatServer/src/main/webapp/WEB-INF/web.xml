@@ -17,11 +17,11 @@
 
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
-        <servlet-class>WebPart.servlet.LoginServlet</servlet-class>
+        <servlet-class>WebPart.servlet.RegLogClientServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/login</url-pattern>
+        <url-pattern>/regLogClient</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -43,12 +43,12 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>RegisterServlet</servlet-name>
-        <servlet-class>WebPart.servlet.RegisterServlet</servlet-class>
+        <servlet-name>RegLogAgentServlet</servlet-name>
+        <servlet-class>WebPart.servlet.RegLogAgentServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>RegisterServlet</servlet-name>
-        <url-pattern>/register</url-pattern>
+        <servlet-name>RegLogAgentServlet</servlet-name>
+        <url-pattern>/regLogAgent</url-pattern>
     </servlet-mapping>
 
     <filter>

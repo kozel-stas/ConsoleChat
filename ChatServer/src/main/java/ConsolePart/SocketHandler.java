@@ -1,6 +1,7 @@
 package ConsolePart;
 
 import com.google.gson.Gson;
+import model.AnswerCode;
 import model.ChatInterface;
 import model.CommandContainer;
 import model.FindAgentSystem;

@@ -4,7 +4,6 @@ public enum AnswerCode {
     EXIT(600),
     MESSAGE(601),
 
-
     NEED_REGISTER_OR_LOGIN(101),
     YOU_REGISTER_OR_LOGIN_YET(102),
     CLIENT_ONLINE_YET(103),

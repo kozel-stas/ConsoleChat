@@ -1,0 +1,84 @@
+@charset "UTF-8";
+* {
+    margin: 0;
+    padding: 0;
+
+}
+
+header {
+    width: 100%;
+    background-color: #0a0a19;
+    min-height: 70px;
+    max-height: 80px;
+    text-align: end;
+    border-bottom-style: solid;
+    border-color: silver;
+}
+
+footer {
+    width: 100%;
+    background-color: #0a0a19;
+    min-height: 30px;
+    max-height: 40px;
+    border-top-style: solid;
+    border-color: silver;
+    color: #a9aa94;
+    text-align: end;
+}
+
+.pain {
+    width: 100%;
+    background-color: #F5EFEF;
+    padding: 20px;
+}
+
+.main {
+    width: 40%;
+    min-height: 500px;
+    margin: 0 auto;
+}
+
+.register {
+    width: 100%;
+    margin: 10px;
+    padding: 10px;
+}
+
+.login {
+    width: 100%;
+    margin: 10px;
+    margin-top: 20px;
+    padding: 10px;
+}
+
+.button {
+    margin-top: 10px;
+    border: none;
+    color: #a9aa94;
+    background-color: #0a0a19;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    float: right;
+}
+
+h1 {
+
+}
+
+p {
+    color: darkred;
+    margin: 15px;
+    margin-left: 0px;
+    font-size: 20px;
+}
+
+.inputLine {
+    margin-top: 10px;
+    width: 100%;
+    min-height: 25px;
+    font-size: 20px;
+}
+
