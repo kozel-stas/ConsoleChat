@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="Cache-control" content="NO-CACHE">
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <link href="/css/ChatPage.css" rel="stylesheet" type="text/css"/>
     <title>ChatRoom</title>
@@ -21,7 +22,7 @@
         </div>
         <div class="buttonSend">
             <button id="send"> Отправить</button>
-            <%if("Agent".equals(request.getSession().getAttribute("typeUser"))){%>
+            <%if("Client".equals(request.getSession().getAttribute("typeUser"))){%>
             <button id="leave"> Покинуть</button>
             <%}%>
         </div>

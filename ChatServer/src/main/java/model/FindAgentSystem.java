@@ -150,16 +150,22 @@ public class FindAgentSystem {
         agents.put(agent.getName(),agent);
     }
 
-    public void removeAgent(Client agent) {
+    private void removeAgent(Client agent) {
         waitAgents.remove(agent);
         agents.remove(agent.getName(),agent);
         addInDatabase(agent, "Agent");
     }
 
-    public void removeClient(Client user) {
+    private void removeClient(Client user) {
         waitUsers.remove(user);
         users.remove(user.getName(),user);
         addInDatabase(user, "Client");
+    }
+
+    public void remove (Client client){
+        if(client.isAgent())
+            removeAgent(client);
+        else removeClient(client);
     }
 
     public void clear() {

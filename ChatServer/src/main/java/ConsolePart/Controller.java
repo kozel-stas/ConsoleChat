@@ -92,7 +92,7 @@ public class Controller {
         } else {
             if (exitPattern.matcher(command).find()) {
                 if (client.getRecipient() != null) {
-                    leave();
+                    close();
                     socket.send(new CommandContainer(AnswerCode.EXIT, "Server"));
                 } else socket.send(new CommandContainer(AnswerCode.EXIT, "Server"));
             } else {
@@ -235,10 +235,15 @@ public class Controller {
 
     protected void waitAgent() {
         waitAgent = true;
-    }//для отелючения обработки только сообщений(не команд) при отсутствии агента
+    }
 
     protected void notWaitAgent() {
         waitAgent = false;
+    }
+
+    public void close(){
+        findAgentSystem.remove(client);
+        leave();
     }
 
     public void leave() {
@@ -254,7 +259,6 @@ public class Controller {
                         client.getRecipient().setRecipient(null);
                     }
                 }
-                findAgentSystem.removeAgent(client);
             } else {
                 if (client.getRecipient() != null) {
                     client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.CLIENT_LEAVE, "Server"));
@@ -265,7 +269,6 @@ public class Controller {
                         client.getRecipient().setRecipient(null);
                     }
                 }
-                findAgentSystem.removeClient(client);
             }
             log.info("Client abort connection " + client.toString());
             client.setRecipient(null);

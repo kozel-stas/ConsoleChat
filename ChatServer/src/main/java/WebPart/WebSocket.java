@@ -38,47 +38,52 @@ public class WebSocket implements ChatInterface {
     public void open(Session session, EndpointConfig config) {
         this.wsSession = session;
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-        ServletContext servletContext = httpSession.getServletContext();
-        findAgentSystem = (FindAgentSystem) servletContext.getAttribute("findAgentSystem");
+        findAgentSystem = FindAgentSystem.getInstance();
         final String login = (String) httpSession.getAttribute("login");
         final boolean isAgent = "Agent".equals((String) httpSession.getAttribute("typeUser"));
-        httpSession.setAttribute("isWork", true);
-        client = findAgentSystem.getUser(login, isAgent);
-        if (client != null) {
-            client.setSocket(this);
-            if (client.isAgent()) {
-                if (findAgentSystem.findSystem(client)) {
-                    client.getRecipient().getSocket().updateBufferedMessage();
-                }
-            } else {
-                if (findAgentSystem.findSystem(client)) {
+        if(login!=null) {
+            httpSession.setAttribute("isWork", true);
+            client = findAgentSystem.getUser(login, isAgent);
+            if (client != null) {
+                client.setSocket(this);
+                if (client.isAgent()) {
+                    if (findAgentSystem.findSystem(client)) {
+                        client.getRecipient().getSocket().updateBufferedMessage();
+                    }
                 } else {
-                    bufferedMessage = new ArrayList<>();
-                    send(new CommandContainer(AnswerCode.NO_AGENT_WAIT, "Server"));
+                    if (findAgentSystem.findSystem(client)) {} else {
+                        bufferedMessage = new ArrayList<>();
+                        send(new CommandContainer(AnswerCode.NO_AGENT_WAIT, "Server"));
+                    }
                 }
-            }
+            } else close();
         } else close();
 
     }
 
     @OnMessage
     public void input(String msg) {
-        CommandContainer commandContainer = new CommandContainer(client.getName(), client.isAgent(), msg);
-        if (client.getRecipient() != null) {
-            client.getRecipient().getSocket().send(commandContainer);
+        if("LEAVE".equals(msg)){
+            send(new CommandContainer(AnswerCode.LEAVE_CHAT, "Server"));
+            leave();
         } else {
-            if (client.isAgent()) send(new CommandContainer(AnswerCode.DONT_HAVE_CLIENT, "Server"));
-            else if (waitAgent) {
-                if (bufferedMessage == null) bufferedMessage = new ArrayList<>();
-                bufferedMessage.add(commandContainer);
-                send(new CommandContainer(AnswerCode.FIRST_AGENT_ANSWER_YOU, "Server"));
+            CommandContainer commandContainer = new CommandContainer(client.getName(), client.isAgent(), msg);
+            if (client.getRecipient() != null) {
+                client.getRecipient().getSocket().send(commandContainer);
             } else {
-                if (findAgentSystem.findSystem(client)) {
-                    client.getRecipient().getSocket().send(commandContainer);
-                } else {
-                    bufferedMessage = new ArrayList<>();
+                if (client.isAgent()) send(new CommandContainer(AnswerCode.DONT_HAVE_CLIENT, "Server"));
+                else if (waitAgent) {
+                    if (bufferedMessage == null) bufferedMessage = new ArrayList<>();
                     bufferedMessage.add(commandContainer);
-                    send(new CommandContainer(AnswerCode.NO_AGENT_WAIT, "Server"));
+                    send(new CommandContainer(AnswerCode.FIRST_AGENT_ANSWER_YOU, "Server"));
+                } else {
+                    if (findAgentSystem.findSystem(client)) {
+                        client.getRecipient().getSocket().send(commandContainer);
+                    } else {
+                        bufferedMessage = new ArrayList<>();
+                        bufferedMessage.add(commandContainer);
+                        send(new CommandContainer(AnswerCode.NO_AGENT_WAIT, "Server"));
+                    }
                 }
             }
         }
@@ -87,6 +92,8 @@ public class WebSocket implements ChatInterface {
     @OnClose
     public void close() {
         leave();
+        findAgentSystem.remove(client);
+        changeWorkAttribute();
         if (wsSession.isOpen()) {
             try {
                 wsSession.close();
@@ -99,7 +106,16 @@ public class WebSocket implements ChatInterface {
     @OnError
     public void error(Session session, Throwable t) {
         leave();
+        changeWorkAttribute();
         log.error("Error in webSocket", t);
+    }
+
+    private void changeWorkAttribute(){
+        try {
+            httpSession.removeAttribute("isWork");
+        } catch (IllegalStateException ex){
+            log.info("invalid session",ex);
+        }
     }
 
     @Override
@@ -107,7 +123,7 @@ public class WebSocket implements ChatInterface {
         try {
             wsSession.getBasicRemote().sendText(json.toJson(commandContainer));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Exception in WebSocket sending", e);
         }
     }
 
@@ -143,9 +159,6 @@ public class WebSocket implements ChatInterface {
                         client.getRecipient().setRecipient(null);
                     }
                 }
-                findAgentSystem.removeAgent(client);
-                if (httpSession != null)
-                    httpSession.removeAttribute("isWork");
             } else {
                 if (client.getRecipient() != null) {
                     client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.CLIENT_LEAVE, "Server"));
@@ -154,12 +167,9 @@ public class WebSocket implements ChatInterface {
                     } else {
                         client.getRecipient().setRecipient(null);
                     }
-
                 }
-                findAgentSystem.removeClient(client);
-                if (httpSession != null)
-                    httpSession.removeAttribute("isWork");
             }
+            client.setRecipient(null);
         }
     }
 

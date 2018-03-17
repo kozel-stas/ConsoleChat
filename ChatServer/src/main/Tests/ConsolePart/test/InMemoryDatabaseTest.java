@@ -40,7 +40,7 @@ public class InMemoryDatabaseTest {
     public void addClientOnDatabase() {
         client = new Client("stas", socketHandlerClient, false);
         findAgentSystem.addClient(client);
-        findAgentSystem.removeClient(client);
+        findAgentSystem.remove(client);
         Assert.assertTrue(findAgentSystem.findClient("stas"));
     }
 
@@ -48,7 +48,7 @@ public class InMemoryDatabaseTest {
     public void addAgentOnDatabase() {
         agent = new Client("stas", socketHandlerClient, true);
         findAgentSystem.addAgent(agent);
-        findAgentSystem.removeAgent(agent);
+        findAgentSystem.remove(agent);
         Assert.assertTrue(findAgentSystem.findAgent("stas"));
     }
 
@@ -56,7 +56,7 @@ public class InMemoryDatabaseTest {
     public void addClientOnDatabaseFindAgent() {
         client = new Client("stas", socketHandlerClient, false);
         findAgentSystem.addClient(client);
-        findAgentSystem.removeClient(client);
+        findAgentSystem.remove(client);
         Assert.assertFalse(findAgentSystem.findAgent("stas"));
     }
 
@@ -64,7 +64,7 @@ public class InMemoryDatabaseTest {
     public void addAgentOnDatabaseFindClient() {
         agent = new Client("stas", socketHandlerClient, true);
         findAgentSystem.addAgent(agent);
-        findAgentSystem.removeAgent(agent);
+        findAgentSystem.remove(agent);
         Assert.assertFalse(findAgentSystem.findClient("stas"));
     }
 
@@ -72,7 +72,7 @@ public class InMemoryDatabaseTest {
     public void loginDatabaseAgent() {
         agent = new Client("stas", socketHandlerClient, true);
         findAgentSystem.addAgent(agent);
-        findAgentSystem.removeAgent(agent);
+        findAgentSystem.remove(agent);
         Assert.assertTrue(findAgentSystem.authorize("stas", "Agent"));
     }
 
@@ -80,7 +80,7 @@ public class InMemoryDatabaseTest {
     public void loginDatabaseClient() {
         client = new Client("stas", socketHandlerClient, true);
         findAgentSystem.addClient(client);
-        findAgentSystem.removeClient(client);
+        findAgentSystem.remove(client);
         Assert.assertTrue(findAgentSystem.authorize("stas", "Client"));
     }
 
