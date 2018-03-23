@@ -8,7 +8,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class ChatServlet extends HttpServlet {
-    private final String pathChatPage = "/pages/ChatPage.jsp";
+    private final String pathChatPageClient = "/pages/ChatPage.html";
+    private final String pathChatPageAgent = "/pages/ChatPageAgent.html";
     private final String loginAttribute = "login";
     private final String typeUserAttribute = "typeUser";
     private final String isChatAttribute = "isWork";
@@ -18,7 +19,9 @@ public class ChatServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession httpSession = request.getSession();
         if (httpSession != null && httpSession.getAttribute(loginAttribute) != null && httpSession.getAttribute(typeUserAttribute) != null && httpSession.getAttribute(isChatAttribute) == null)
-            request.getRequestDispatcher(pathChatPage).forward(request, response);
+            if("Agent".equals(httpSession.getAttribute(typeUserAttribute))) request.getRequestDispatcher(pathChatPageAgent).forward(request, response);
+            else request.getRequestDispatcher(pathChatPageClient).forward(request, response);
         else response.sendRedirect(addressStart);
     }
-}
+
+}       

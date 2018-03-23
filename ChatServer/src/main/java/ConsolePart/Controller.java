@@ -1,9 +1,6 @@
 package ConsolePart;
 
-import model.AnswerCode;
-import model.Client;
-import model.CommandContainer;
-import model.FindAgentSystem;
+import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,7 +148,7 @@ public class Controller {
                 socket.send(new CommandContainer(AnswerCode.DONT_HAVE_REGISTER_CLIENT, "Server"));
                 return;
             }
-            Client user = new Client(line, socket, false);
+            Client user = new Client(line, socket, false, TypeApp.CONSOLE);
             findAgentSystem.addClient(user);
             log.info("Login client", user);
             client = user;
@@ -170,7 +167,7 @@ public class Controller {
                 socket.send(new CommandContainer(AnswerCode.DONT_HAVE_REGISTER_AGENT, "Server"));
                 return;
             }
-            Client agent = new Client(line, socket, true);
+            Client agent = new Client(line, socket, true,TypeApp.CONSOLE);
             findAgentSystem.addAgent(agent);
             log.info("Login agent", agent);
             socket.send(new CommandContainer(line, true, "goodLogin"));
@@ -198,7 +195,7 @@ public class Controller {
                 socket.send(new CommandContainer(AnswerCode.NAME_ALREADY_USED, "Server"));
                 return;
             }
-            Client agent = new Client(line, socket, true);
+            Client agent = new Client(line, socket, true,TypeApp.CONSOLE);
             findAgentSystem.addAgent(agent);
             agent.getSocket().send(new CommandContainer(line, true, "goodRegister"));
             log.info("register new agent", agent);
@@ -217,7 +214,7 @@ public class Controller {
                 socket.send(new CommandContainer(AnswerCode.NAME_ALREADY_USED, "Server"));
                 return;
             }
-            Client user = new Client(line, socket, false);
+            Client user = new Client(line, socket, false,TypeApp.CONSOLE);
             findAgentSystem.addClient(user);
             log.info("register new client", user);
             client = user;
@@ -251,22 +248,23 @@ public class Controller {
             if (client.isAgent()) {
                 if (client.getRecipient() != null) {
                     if (findAgentSystem.findSystem(client.getRecipient())) {
-                        client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
+                        for(Client receipt:(List<Client>)client.getRecipients())
+                            receipt.getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
                         client.getRecipient().getSocket().updateBufferedMessage();
                         log.info("start conversation" + client.getRecipient().toString() + " " + client.getRecipient().getRecipient().toString());
                     } else {
-                        client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE_WAIT_NEW, "Server"));
+                        for(Client receipt:(List<Client>)client.getRecipients())
+                            receipt.getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE_WAIT_NEW, "Server"));
                         client.getRecipient().setRecipient(null);
                     }
                 }
             } else {
                 if (client.getRecipient() != null) {
-                    client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.CLIENT_LEAVE, "Server"));
+                    client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.CLIENT_LEAVE, client.getName()));
+                    client.getRecipient().deleteReceipt(client);
                     if (findAgentSystem.findSystem(client.getRecipient())) {
                         client.getRecipient().getRecipient().getSocket().updateBufferedMessage();
                         log.info("start conversation" + client.toString() + " " + client.getRecipient().toString());
-                    } else {
-                        client.getRecipient().setRecipient(null);
                     }
                 }
             }

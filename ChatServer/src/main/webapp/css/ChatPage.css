@@ -33,7 +33,7 @@ footer {
 
 .main {
     width: 40%;
-    min-height: 500px;
+    min-height: 600px;
     margin: 0 auto;
 }
 
@@ -42,21 +42,21 @@ footer {
     min-height: 400px;
 }
 
-#textArea {
+.textArea {
     width: 100%;
     min-height: 400px;
     resize: none;
     border-color: silver;
 }
 
-#message {
+.message {
     margin-top: 10px;
     width: 100%;
     min-height: 25px;
     font-size: 20px;
 }
 
-#send {
+.send {
     margin-top: 10px;
     border: none;
     color: #a9aa94;
@@ -69,7 +69,7 @@ footer {
     float: left;
 }
 
-#leave {
+.leave {
     margin-top: 10px;
     border: none;
     color: #a9aa94;

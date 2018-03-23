@@ -3,6 +3,7 @@ package WebPart.servlet;
 import model.AnswerCode;
 import model.Client;
 import model.FindAgentSystem;
+import model.TypeApp;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -46,7 +47,7 @@ public class RegLogClientServlet extends HttpServlet {
                     request.setAttribute(nameAnswerCode, AnswerCode.NAME_ALREADY_USED);
                     request.getRequestDispatcher(pathRegLogClient).forward(request, response);
                 } else {
-                    findAgentSystem.addClient(new Client(login, null, false));
+                    findAgentSystem.addClient(new Client(login, null, false, TypeApp.WEB));
                     request.getSession().setAttribute(loginAttribute, login);
                     request.getSession().setAttribute(typeUserAttribute, typeUser);
                     response.sendRedirect(addressChatPage);
@@ -61,7 +62,7 @@ public class RegLogClientServlet extends HttpServlet {
                     request.setAttribute(nameAnswerCode, AnswerCode.DONT_HAVE_REGISTER_CLIENT);
                     request.getRequestDispatcher(pathRegLogClient).forward(request, response);
                 } else {
-                    findAgentSystem.addClient(new Client(login, null, false));
+                    findAgentSystem.addClient(new Client(login, null, false,TypeApp.WEB));
                     request.getSession().setAttribute(loginAttribute, login);
                     request.getSession().setAttribute(typeUserAttribute, typeUser);
                     response.sendRedirect(addressChatPage);

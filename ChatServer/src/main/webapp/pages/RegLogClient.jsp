@@ -27,7 +27,6 @@
                 }%>
             <form method="post" action="/regLogClient">
                 <input class="inputLine" type="text" required placeholder="Type your name here..." name="login"><br>
-                <input type="hidden" name="typeUser" value="Client"><br>
                 <input type="hidden" name="typeOperation" value="register">
                 <input class="button" type="submit" value="Sign up"><br>
             </form>
@@ -52,7 +51,6 @@
                 }%>
             <form method="post" action="/regLogClient">
                 <input class="inputLine" type="text" required placeholder="Type your name here..." name="login"><br>
-                <input type="hidden" name="typeUser" value="Client"><br>
                 <input type="hidden" name="typeOperation" value="login">
                 <input class="button" type="submit" value="Sign in"><br>
             </form>

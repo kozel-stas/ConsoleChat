@@ -103,25 +103,30 @@ public class FindAgentSystem {
                 synchronized (FindAgentSystem.class) {
                     Client user = waitUsers.poll();
                     user.setRecipient(client);
-                    client.setRecipient(user);
+                    client.addReceipt(user);
                     user.getSocket().notWaitAgent();
                     user.getSocket().send(new CommandContainer(AnswerCode.NEW_AGENT, client.getName()));
                     client.getSocket().send(new CommandContainer(AnswerCode.NEW_CLIENT, user.getName()));
+                    if(client.getTypeApp()==TypeApp.WEB && client.checkMaxSize())
+                        waitAgents.add(client);
                 }
                 return true;
             } else {
-                waitAgents.add(client);
+                if (!waitAgents.contains(client))
+                    waitAgents.add(client);
                 return false;
             }
         } else {
             if (waitAgents.size() > 0) {
                 synchronized (FindAgentSystem.class) {
                     Client agent = waitAgents.poll();
-                    agent.setRecipient(client);
+                    agent.addReceipt(client);
                     client.setRecipient(agent);
                     client.getSocket().notWaitAgent();
                     client.getSocket().send(new CommandContainer(AnswerCode.NEW_AGENT, agent.getName()));
                     agent.getSocket().send(new CommandContainer(AnswerCode.NEW_CLIENT, client.getName()));
+                    if(agent.getTypeApp()==TypeApp.WEB && agent.checkMaxSize())
+                        waitAgents.add(agent);
                 }
                 return true;
             } else {
@@ -165,9 +170,10 @@ public class FindAgentSystem {
     }
 
     public void remove(Client client) {
-        if (client.isAgent())
-            removeAgent(client);
-        else removeClient(client);
+        if (client != null)
+            if (client.isAgent())
+                removeAgent(client);
+            else removeClient(client);
     }
 
     public void clear() {
@@ -181,14 +187,14 @@ public class FindAgentSystem {
         if (isAgent)
             if (agents.get(name) == null) {
                 if (authorize(name, "Agent")) {
-                    Client client = new Client(name, null, isAgent);
+                    Client client = new Client(name, null, isAgent,null);
                     addAgent(client);
                     return client;
                 } else return null;
             } else return agents.get(name);
         else if (users.get(name) == null) {
             if (authorize(name, "Client")) {
-                Client client = new Client(name, null, isAgent);
+                Client client = new Client(name, null, isAgent,null);
                 addClient(client);
                 return client;
             } else return null;

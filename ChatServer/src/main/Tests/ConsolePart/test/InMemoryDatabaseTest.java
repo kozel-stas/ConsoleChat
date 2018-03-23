@@ -38,7 +38,7 @@ public class InMemoryDatabaseTest {
 
     @Test
     public void addClientOnDatabase() {
-        client = new Client("stas", socketHandlerClient, false);
+        client = new Client("stas", socketHandlerClient, false,null);
         findAgentSystem.addClient(client);
         findAgentSystem.remove(client);
         Assert.assertTrue(findAgentSystem.findClient("stas"));
@@ -46,7 +46,7 @@ public class InMemoryDatabaseTest {
 
     @Test
     public void addAgentOnDatabase() {
-        agent = new Client("stas", socketHandlerClient, true);
+        agent = new Client("stas", socketHandlerClient, true,null);
         findAgentSystem.addAgent(agent);
         findAgentSystem.remove(agent);
         Assert.assertTrue(findAgentSystem.findAgent("stas"));
@@ -54,7 +54,7 @@ public class InMemoryDatabaseTest {
 
     @Test
     public void addClientOnDatabaseFindAgent() {
-        client = new Client("stas", socketHandlerClient, false);
+        client = new Client("stas", socketHandlerClient, false,null);
         findAgentSystem.addClient(client);
         findAgentSystem.remove(client);
         Assert.assertFalse(findAgentSystem.findAgent("stas"));
@@ -62,7 +62,7 @@ public class InMemoryDatabaseTest {
 
     @Test
     public void addAgentOnDatabaseFindClient() {
-        agent = new Client("stas", socketHandlerClient, true);
+        agent = new Client("stas", socketHandlerClient, true,null);
         findAgentSystem.addAgent(agent);
         findAgentSystem.remove(agent);
         Assert.assertFalse(findAgentSystem.findClient("stas"));
@@ -70,7 +70,7 @@ public class InMemoryDatabaseTest {
 
     @Test
     public void loginDatabaseAgent() {
-        agent = new Client("stas", socketHandlerClient, true);
+        agent = new Client("stas", socketHandlerClient, true,null);
         findAgentSystem.addAgent(agent);
         findAgentSystem.remove(agent);
         Assert.assertTrue(findAgentSystem.authorize("stas", "Agent"));
@@ -78,7 +78,7 @@ public class InMemoryDatabaseTest {
 
     @Test
     public void loginDatabaseClient() {
-        client = new Client("stas", socketHandlerClient, true);
+        client = new Client("stas", socketHandlerClient, false,null);
         findAgentSystem.addClient(client);
         findAgentSystem.remove(client);
         Assert.assertTrue(findAgentSystem.authorize("stas", "Client"));

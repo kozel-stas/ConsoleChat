@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-control" content="NO-CACHE">
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link href="/css/ChatPage.css" rel="stylesheet" type="text/css"/>
+    <title>ChatRoom</title>
+    <script type="text/javascript" src="/js/jquery-3.3.1.js"></script>
+</head>
+<body>
+<script>
+    $("#myTab a").click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+</script>
+<header>
+    <a class="reg" href="/signOut">Sign Out</a>
+</header>
+<div class="pain">
+    <div class="main">
+        <ul id="myTab" class="nav nav-tabs">
+        </ul>
+        <div class="tab-content">
+        </div>
+    </div>
+</div>
+<footer>
+    TouchSoft
+</footer>
+<script type="text/javascript" src="../js/ChatPageAgent.js"></script>
+</body>
+</html>

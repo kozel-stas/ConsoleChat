@@ -52,8 +52,8 @@ public class FindSystemTest {
 
     @Test
     public void findSystemTestAgentClient() {
-        client = new Client("stas", socketHandlerClient, false);
-        agent = new Client("stas", socketHandlerAgent, true);
+        client = new Client("stas", socketHandlerClient, false,null);
+        agent = new Client("stas", socketHandlerAgent, true,null);
         Assert.assertFalse(findAgentSystem.findSystem(agent));
         Assert.assertTrue(findAgentSystem.findSystem(client));
         Assert.assertEquals(new CommandContainer(AnswerCode.NEW_CLIENT, "stas").toString(), answerAgent.toString());
@@ -62,20 +62,20 @@ public class FindSystemTest {
 
     @Test
     public void findSystemTestClient() {
-        client = new Client("stas", socketHandlerClient, false);
+        client = new Client("stas", socketHandlerClient, false,null);
         Assert.assertFalse(findAgentSystem.findSystem(client));
     }
 
     @Test
     public void findSystemTestAgent() {
-        agent = new Client("stas", socketHandlerClient, true);
+        agent = new Client("stas", socketHandlerClient, true,null);
         Assert.assertFalse(findAgentSystem.findSystem(agent));
     }
 
     @Test
     public void findSystemTestClientAgent() {
-        agent = new Client("Vlad", socketHandlerAgent, true);
-        client = new Client("Stas", socketHandlerClient, false);
+        agent = new Client("Vlad", socketHandlerAgent, true,null);
+        client = new Client("Stas", socketHandlerClient, false,null);
         Assert.assertFalse(findAgentSystem.findSystem(client));
         Assert.assertTrue(findAgentSystem.findSystem(agent));
         Assert.assertEquals(new CommandContainer(AnswerCode.NEW_CLIENT, "Stas").toString(), answerAgent.toString());
@@ -84,10 +84,10 @@ public class FindSystemTest {
 
     @Test
     public void findSystemTestSomeClientAgent() {
-        agent = new Client("Vlad", socketHandlerAgent, true);
-        client = new Client("Stas", socketHandlerClient, false);
-        Client testClient = new Client("WebPart", mock(SocketHandler.class), false);
-        Client testClient1 = new Client("Test1", mock(SocketHandler.class), false);
+        agent = new Client("Vlad", socketHandlerAgent, true,null);
+        client = new Client("Stas", socketHandlerClient, false,null);
+        Client testClient = new Client("WebPart", mock(SocketHandler.class), false,null);
+        Client testClient1 = new Client("Test1", mock(SocketHandler.class), false,null);
         Assert.assertFalse(findAgentSystem.findSystem(client));
         Assert.assertFalse(findAgentSystem.findSystem(testClient));
         Assert.assertFalse(findAgentSystem.findSystem(testClient1));
@@ -98,10 +98,10 @@ public class FindSystemTest {
 
     @Test
     public void findSystemTestClientSomeAgent() {
-        agent = new Client("Vlad", socketHandlerAgent, true);
-        client = new Client("Stas", socketHandlerClient, false);
-        Client testAgent = new Client("WebPart", mock(SocketHandler.class), true);
-        Client testAgent1 = new Client("Test1", mock(SocketHandler.class), true);
+        agent = new Client("Vlad", socketHandlerAgent, true,null);
+        client = new Client("Stas", socketHandlerClient, false,null);
+        Client testAgent = new Client("WebPart", mock(SocketHandler.class), true,null);
+        Client testAgent1 = new Client("Test1", mock(SocketHandler.class), true,null);
         Assert.assertFalse(findAgentSystem.findSystem(client));
         Assert.assertTrue(findAgentSystem.findSystem(agent));
         Assert.assertFalse(findAgentSystem.findSystem(testAgent));

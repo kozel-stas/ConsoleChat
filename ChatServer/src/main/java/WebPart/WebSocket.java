@@ -1,11 +1,7 @@
 package WebPart;
 
 import com.google.gson.Gson;
-import model.ChatInterface;
-import model.FindAgentSystem;
-import model.CommandContainer;
-import model.Client;
-import model.AnswerCode;
+import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,17 +40,12 @@ public class WebSocket implements ChatInterface {
         if (login != null) {
             httpSession.setAttribute("isWork", true);
             client = findAgentSystem.getUser(login, isAgent);
+            client.setTypeApp(TypeApp.WEB);
             if (client != null) {
                 client.setSocket(this);
                 if (client.isAgent()) {
                     if (findAgentSystem.findSystem(client)) {
                         client.getRecipient().getSocket().updateBufferedMessage();
-                    }
-                } else {
-                    if (findAgentSystem.findSystem(client)) {
-                    } else {
-                        bufferedMessage = new ArrayList<>();
-                        send(new CommandContainer(AnswerCode.NO_AGENT_WAIT, "Server"));
                     }
                 }
             } else close();
@@ -69,10 +60,15 @@ public class WebSocket implements ChatInterface {
                 send(new CommandContainer(AnswerCode.LEAVE_CHAT, "Server"));
                 leave();
             } else send(new CommandContainer(AnswerCode.DONT_HAVE_CHAT, "Server"));
-        } else {
-            CommandContainer commandContainer = new CommandContainer(client.getName(), client.isAgent(), msg);
+        } else {MessageWeb messageWeb=null;
+            CommandContainer commandContainer=null;
+            if(client.isAgent()){
+                messageWeb=json.fromJson(msg,MessageWeb.class);
+                commandContainer = new CommandContainer(client.getName(), client.isAgent(),messageWeb.getMsg());
+            } else commandContainer = new CommandContainer(client.getName(), client.isAgent(),msg);
             if (client.getRecipient() != null) {
-                client.getRecipient().getSocket().send(commandContainer);
+                if(client.isAgent()) client.getReceiptByName(messageWeb.getName()).getSocket().send(commandContainer);
+                else client.getRecipient().getSocket().send(commandContainer);
             } else {
                 if (client.isAgent()) send(new CommandContainer(AnswerCode.DONT_HAVE_CLIENT, "Server"));
                 else if (waitAgent) {
@@ -156,20 +152,21 @@ public class WebSocket implements ChatInterface {
             if (client.isAgent()) {
                 if (client.getRecipient() != null) {
                     if (findAgentSystem.findSystem(client.getRecipient())) {
-                        client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
+                        for(Client receipt:(List<Client>)client.getRecipients())
+                            receipt.getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
                         client.getRecipient().getSocket().updateBufferedMessage();
                     } else {
-                        client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE_WAIT_NEW, "Server"));
+                        for(Client receipt:(List<Client>)client.getRecipients())
+                            receipt.getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE_WAIT_NEW, "Server"));
                         client.getRecipient().setRecipient(null);
                     }
                 }
             } else {
                 if (client.getRecipient() != null) {
-                    client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.CLIENT_LEAVE, "Server"));
+                    client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.CLIENT_LEAVE, client.getName()));
+                    client.getRecipient().deleteReceipt(client);
                     if (findAgentSystem.findSystem(client.getRecipient())) {
                         client.getRecipient().getRecipient().getSocket().updateBufferedMessage();
-                    } else {
-                        client.getRecipient().setRecipient(null);
                     }
                 }
             }
