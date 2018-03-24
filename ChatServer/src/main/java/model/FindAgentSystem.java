@@ -4,13 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FindAgentSystem {
     private static FindAgentSystem findAgentSystem = null;
@@ -103,7 +99,7 @@ public class FindAgentSystem {
                 synchronized (FindAgentSystem.class) {
                     Client user = waitUsers.poll();
                     user.setRecipient(client);
-                    client.addReceipt(user);
+                    client.addRecipient(user);
                     user.getSocket().notWaitAgent();
                     user.getSocket().send(new CommandContainer(AnswerCode.NEW_AGENT, client.getName()));
                     client.getSocket().send(new CommandContainer(AnswerCode.NEW_CLIENT, user.getName()));
@@ -120,7 +116,7 @@ public class FindAgentSystem {
             if (waitAgents.size() > 0) {
                 synchronized (FindAgentSystem.class) {
                     Client agent = waitAgents.poll();
-                    agent.addReceipt(client);
+                    agent.addRecipient(client);
                     client.setRecipient(agent);
                     client.getSocket().notWaitAgent();
                     client.getSocket().send(new CommandContainer(AnswerCode.NEW_AGENT, agent.getName()));

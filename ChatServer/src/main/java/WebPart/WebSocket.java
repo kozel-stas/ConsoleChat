@@ -5,7 +5,6 @@ import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.websocket.OnOpen;
 import javax.websocket.OnClose;
@@ -55,7 +54,7 @@ public class WebSocket implements ChatInterface {
 
     @OnMessage
     public void input(String msg) {
-        if ("LEAVE".equals(msg)) {
+        if ("LEAVE".equals(msg) && !client.isAgent()) {
             if (client.getRecipient() != null) {
                 send(new CommandContainer(AnswerCode.LEAVE_CHAT, "Server"));
                 leave();
@@ -63,8 +62,8 @@ public class WebSocket implements ChatInterface {
         } else {
             MessageWeb messageWeb = json.fromJson(msg, MessageWeb.class);
             CommandContainer commandContainer = new CommandContainer(client.getName(), client.isAgent(), messageWeb.getMsg());
-            if (client.getReceiptByName(messageWeb.getName()) != null) {
-                client.getReceiptByName(messageWeb.getName()).getSocket().send(commandContainer);
+            if (client.getRecipient(messageWeb.getName()) != null) {
+                client.getRecipient(messageWeb.getName()).getSocket().send(commandContainer);
             } else {
                 if (client.isAgent()) send(new CommandContainer(AnswerCode.DONT_HAVE_CLIENT, "Server"));
                 else if (waitAgent) {

@@ -22,6 +22,7 @@ $(document).ready(function () {
         var part1 = "<li ";
         var part2 = "<div id=\"panel" + name + "\" class=\"tab-pane fade";
         if (arrClient.length === 0) {
+            $(".msg").remove();
             part1 += " class=\"active\" ";
             part2 += " active in";
         }
@@ -46,6 +47,8 @@ $(document).ready(function () {
         $("#li" + name).remove();
         $("#panel" + name).remove();
         arrClient.remove(name);
+        if(arrClient.length==0)
+            $(".main").append("<div class=\"msg\"><P>Нет подключенных клиентов</P></div>")
     }
 
     socket.onmessage = function (event) {

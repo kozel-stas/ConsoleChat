@@ -18,7 +18,6 @@ public class ChatServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession httpSession = request.getSession();
-
         if (httpSession != null && httpSession.getAttribute(loginAttribute) != null && httpSession.getAttribute(typeUserAttribute) != null && httpSession.getAttribute(isChatAttribute) == null)
             if("Agent".equals(httpSession.getAttribute(typeUserAttribute))) request.getRequestDispatcher(pathChatPageAgent).forward(request, response);
             else request.getRequestDispatcher(pathChatPageClient).forward(request, response);

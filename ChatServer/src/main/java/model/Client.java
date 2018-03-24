@@ -40,24 +40,24 @@ public class Client {
         return isAgent;
     }
 
-    public Client getRecipient() {
-        if(recipient.size()>0) return recipient.get(0);
-        else return null;
-    }
-
     public void setRecipient(Client recipient) {
         if(this.recipient.size()>0) this.recipient.remove(0);
         if(recipient!=null) this.recipient.add(recipient);
     }
 
-    public Client getReceiptByName(String name){
+    public Client getRecipient() {
+        if(recipient.size()>0) return recipient.get(0);
+        else return null;
+    }
+
+    public Client getRecipient(String name){
         for(Client client:this.recipient)
             if(client.getName().equals(name))
                 return client;
         return null;
     }
 
-    public void addReceipt(Client receipt){
+    public void addRecipient(Client receipt){
         if(isAgent && this.recipient.size()<maxClient)
             this.recipient.add(0,receipt);
 

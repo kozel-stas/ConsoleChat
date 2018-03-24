@@ -33,6 +33,7 @@ footer {
 
 .main {
     width: 40%;
+    height: 100%;
     min-height: 600px;
     margin: 0 auto;
 }
@@ -91,4 +92,16 @@ a {
     margin-right: 30px;
     vertical-align: middle;
     font-size: 24px;
+}
+
+
+p {
+    color: darkred;
+    margin: 15px;
+    margin-left: 0px;
+    font-size: 20px;
+}
+
+.msg {
+    text-align: center;
 }
