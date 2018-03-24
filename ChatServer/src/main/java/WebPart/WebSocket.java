@@ -44,7 +44,7 @@ public class WebSocket implements ChatInterface {
             if (client != null) {
                 client.setSocket(this);
                 if (client.isAgent()) {
-                    if (findAgentSystem.findSystem(client)) {
+                    while (findAgentSystem.findSystem(client)) {
                         client.getRecipient().getSocket().updateBufferedMessage();
                     }
                 }
@@ -56,19 +56,15 @@ public class WebSocket implements ChatInterface {
     @OnMessage
     public void input(String msg) {
         if ("LEAVE".equals(msg)) {
-            if(client.getRecipient()!=null) {
+            if (client.getRecipient() != null) {
                 send(new CommandContainer(AnswerCode.LEAVE_CHAT, "Server"));
                 leave();
             } else send(new CommandContainer(AnswerCode.DONT_HAVE_CHAT, "Server"));
-        } else {MessageWeb messageWeb=null;
-            CommandContainer commandContainer=null;
-            if(client.isAgent()){
-                messageWeb=json.fromJson(msg,MessageWeb.class);
-                commandContainer = new CommandContainer(client.getName(), client.isAgent(),messageWeb.getMsg());
-            } else commandContainer = new CommandContainer(client.getName(), client.isAgent(),msg);
-            if (client.getRecipient() != null) {
-                if(client.isAgent()) client.getReceiptByName(messageWeb.getName()).getSocket().send(commandContainer);
-                else client.getRecipient().getSocket().send(commandContainer);
+        } else {
+            MessageWeb messageWeb = json.fromJson(msg, MessageWeb.class);
+            CommandContainer commandContainer = new CommandContainer(client.getName(), client.isAgent(), messageWeb.getMsg());
+            if (client.getReceiptByName(messageWeb.getName()) != null) {
+                client.getReceiptByName(messageWeb.getName()).getSocket().send(commandContainer);
             } else {
                 if (client.isAgent()) send(new CommandContainer(AnswerCode.DONT_HAVE_CLIENT, "Server"));
                 else if (waitAgent) {
@@ -90,8 +86,8 @@ public class WebSocket implements ChatInterface {
 
     @OnClose
     public void close() {
-        leave();
         findAgentSystem.remove(client);
+        leave();
         changeWorkAttribute();
         if (wsSession.isOpen()) {
             try {
@@ -104,8 +100,8 @@ public class WebSocket implements ChatInterface {
 
     @OnError
     public void error(Session session, Throwable t) {
-        leave();
         findAgentSystem.remove(client);
+        leave();
         changeWorkAttribute();
         log.error("Error in webSocket", t);
     }
@@ -151,14 +147,14 @@ public class WebSocket implements ChatInterface {
         if (client != null) {
             if (client.isAgent()) {
                 if (client.getRecipient() != null) {
-                    if (findAgentSystem.findSystem(client.getRecipient())) {
-                        for(Client receipt:(List<Client>)client.getRecipients())
-                            receipt.getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
-                        client.getRecipient().getSocket().updateBufferedMessage();
-                    } else {
-                        for(Client receipt:(List<Client>)client.getRecipients())
+                    for (Client receipt : (List<Client>) client.getRecipients()) {
+                        receipt.getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
+                        if (findAgentSystem.findSystem(receipt)) {
+                            receipt.getSocket().updateBufferedMessage();
+                        } else {
                             receipt.getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE_WAIT_NEW, "Server"));
-                        client.getRecipient().setRecipient(null);
+                            receipt.setRecipient(null);
+                        }
                     }
                 }
             } else {

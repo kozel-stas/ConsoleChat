@@ -51,7 +51,6 @@ public class Client {
     }
 
     public Client getReceiptByName(String name){
-        if(isAgent)
         for(Client client:this.recipient)
             if(client.getName().equals(name))
                 return client;
@@ -60,7 +59,7 @@ public class Client {
 
     public void addReceipt(Client receipt){
         if(isAgent && this.recipient.size()<maxClient)
-            this.recipient.add(receipt);
+            this.recipient.add(0,receipt);
 
     }
 
@@ -77,7 +76,7 @@ public class Client {
     }
 
     public boolean checkMaxSize(){
-        if(isAgent && recipient.size()<maxClient)
+        if(isAgent && recipient.size()<maxClient && typeApp==TypeApp.WEB)
             return true;
         return false;
     }

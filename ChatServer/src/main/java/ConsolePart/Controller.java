@@ -247,14 +247,12 @@ public class Controller {
         if (client != null) {
             if (client.isAgent()) {
                 if (client.getRecipient() != null) {
+                    client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
                     if (findAgentSystem.findSystem(client.getRecipient())) {
-                        for(Client receipt:(List<Client>)client.getRecipients())
-                            receipt.getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE, "Server"));
                         client.getRecipient().getSocket().updateBufferedMessage();
                         log.info("start conversation" + client.getRecipient().toString() + " " + client.getRecipient().getRecipient().toString());
                     } else {
-                        for(Client receipt:(List<Client>)client.getRecipients())
-                            receipt.getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE_WAIT_NEW, "Server"));
+                        client.getRecipient().getSocket().send(new CommandContainer(AnswerCode.AGENT_LEAVE_WAIT_NEW, "Server"));
                         client.getRecipient().setRecipient(null);
                     }
                 }

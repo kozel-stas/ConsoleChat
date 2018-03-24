@@ -107,7 +107,7 @@ public class FindAgentSystem {
                     user.getSocket().notWaitAgent();
                     user.getSocket().send(new CommandContainer(AnswerCode.NEW_AGENT, client.getName()));
                     client.getSocket().send(new CommandContainer(AnswerCode.NEW_CLIENT, user.getName()));
-                    if(client.getTypeApp()==TypeApp.WEB && client.checkMaxSize())
+                    if(client.checkMaxSize() && !waitAgents.contains(client))
                         waitAgents.add(client);
                 }
                 return true;
@@ -125,7 +125,7 @@ public class FindAgentSystem {
                     client.getSocket().notWaitAgent();
                     client.getSocket().send(new CommandContainer(AnswerCode.NEW_AGENT, agent.getName()));
                     agent.getSocket().send(new CommandContainer(AnswerCode.NEW_CLIENT, client.getName()));
-                    if(agent.getTypeApp()==TypeApp.WEB && agent.checkMaxSize())
+                    if(agent.checkMaxSize() && !waitAgents.contains(agent))
                         waitAgents.add(agent);
                 }
                 return true;
