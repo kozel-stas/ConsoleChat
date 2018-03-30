@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <appender login="FILE" class="ch.qos.logback.core.FileAppender">
         <file>Client/myApp.log</file>
         <encoder>
             <pattern>%date %-5level [%thread] %logger{36} [%file:%line] %msg%n</pattern>

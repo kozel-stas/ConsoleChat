@@ -1,40 +1,42 @@
 package ConsolePart;
 
-public class CommandContainer {
 
-    private String name;
-    private boolean isAgent;
-    private String command;
+public final class CommandContainer {
+
+    private String login;
+    private Role role;
     private String message;
-    private AnswerCode serverinfo;
+    private AnswerCode command;
+    private AnswerCode serverInfo;
 
-    public CommandContainer(AnswerCode serverinfo, String name) {
-        this.name = name;
-        this.isAgent = false;
+    public CommandContainer(String login,Role role ,AnswerCode serverInfo) {
+        this.login = login;
+        this.role = null;
         this.command = null;
         this.message = null;
-        this.serverinfo = serverinfo;
+        this.serverInfo = serverInfo;
     }
 
-    public CommandContainer(String name, boolean isAgent, String message) {
-        this.name = name;
-        this.isAgent = isAgent;
-        this.command = null;
+    public CommandContainer(String login, Role role, String message) {
+        this.login = login;
+        this.role = role;
+        this.command = AnswerCode.MESSAGE;
         this.message = message;
-        this.serverinfo = AnswerCode.MESSAGE;
+        this.serverInfo = null;
     }
 
-    public CommandContainer(String command) {
-        this.isAgent = false;
+    public CommandContainer(AnswerCode command, String login, Role role) {
+        this.role =role;
         this.command = command;
+        this.login = login;
         this.message = null;
     }
 
-    public String getName() {
-        return name;
+    public String getLogin() {
+        return login;
     }
 
-    public String getCommand() {
+    public AnswerCode getCommand() {
         return command;
     }
 
@@ -42,21 +44,22 @@ public class CommandContainer {
         return message;
     }
 
-    public boolean isAgent() {
-        return isAgent;
+    public Role getRole() {
+        return role;
     }
 
-    public AnswerCode getServerinfo() {
-        return serverinfo;
+    public AnswerCode getServerInfo() {
+        return serverInfo;
     }
 
     @Override
     public String toString() {
         if (command != null) {
-            return command;
+            return "Command: " + command.toString() + " ,login: " + login;
         } else {
-            if (serverinfo == AnswerCode.MESSAGE) return name + " isAgent " + isAgent + " " + message;
-            else return name + " " + serverinfo;
+            if (serverInfo == AnswerCode.MESSAGE)
+                return "Name: " + login + " ,Role: " + role.toString() + " ,message: " + message;
+            else return "Login: "+login + " ,ServerInfo: " + serverInfo.toString();
         }
     }
 }

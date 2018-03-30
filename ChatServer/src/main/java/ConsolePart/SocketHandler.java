@@ -1,9 +1,7 @@
 package ConsolePart;
 
 import com.google.gson.Gson;
-import model.ChatInterface;
-import model.CommandContainer;
-import model.FindAgentSystem;
+import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,16 +14,20 @@ import java.net.Socket;
 
 
 public class SocketHandler implements Runnable, ChatInterface {
-    private Logger log = LoggerFactory.getLogger(SocketHandler.class);
+    private static Logger log = LoggerFactory.getLogger(SocketHandler.class);
+    private static DataManipulate dataManipulate;
+    private static Gson json;
+    private User user;
     private Socket connect;
     private BufferedReader input;
     private BufferedWriter output;
-    private Controller controller;
-    private FindAgentSystem findAgentSystem;
-    private Gson json;
+
+    static {
+        json = new Gson();
+        dataManipulate = DataManipulate.getInstance();
+    }
 
     public SocketHandler(Socket connect) {
-        this.findAgentSystem = FindAgentSystem.getInstance();
         this.connect = connect;
         try {
             input = new BufferedReader(new InputStreamReader(connect.getInputStream(), "UTF-8"));
@@ -33,19 +35,17 @@ public class SocketHandler implements Runnable, ChatInterface {
         } catch (IOException e) {
             log.error("IOException in start SocketHandler", e);
         }
-        controller = new Controller(this);
-        json = new Gson();
     }
 
     public void run() {
-        CommandContainer command;
+        CommandContainer commandContainer;
         while (!connect.isClosed()) {
             try {
-                command = json.fromJson(input.readLine(), CommandContainer.class);
-                if (command == null) {
+                commandContainer = json.fromJson(input.readLine(), CommandContainer.class);
+                if (commandContainer == null) {
                     close();
                     break;
-                } else controller.handler(command);
+                } else handler(commandContainer);
             } catch (IOException ex) {
                 close();
                 log.warn("Error reading command", ex);
@@ -53,35 +53,82 @@ public class SocketHandler implements Runnable, ChatInterface {
         }
     }
 
-    public void waitAgent() {
-        controller.waitAgent();
-    }
-
-    public void notWaitAgent() {
-        controller.notWaitAgent();
-    }
-
-    public void updateBufferedMessage() {
-        controller.updateBufferedMessage();
-    }
-
-    public void send(CommandContainer container) {
-        send(json.toJson(container));
-    }
-
-    @Override
-    public void close() {
-        if (!connect.isClosed()) {
-            try {
-                controller.close();
-                connect.close();
-            } catch (IOException ex) {
-                log.error("Error closing connection", ex);
+    private void handler(CommandContainer commandContainer) {
+        log.info("request " + commandContainer.toString());
+        if (user == null) {
+            if (commandContainer.getCommand() != null) {
+                handlerCommand(commandContainer);
+                return;
+            } else {
+                send(new CommandContainer("Server",null, AnswerCode.NEED_REGISTER_OR_LOGIN));
+            }
+        } else {
+            if (commandContainer.getCommand() == AnswerCode.MESSAGE) {
+                if(user.getChat()!=null) user.getChat().sendMessage(commandContainer);
+                else send(new CommandContainer("Server",null,AnswerCode.DONT_HAVE_CLIENT));
+                return;
+            } else {
+                if (commandContainer.getCommand() != null) {
+                    handlerCommand(commandContainer);
+                    return;
+                } else {
+                    log.warn("unknown command " + commandContainer.toString());
+                    send(new CommandContainer("Server",null, AnswerCode.UNKNOWN_MISTAKE));
+                }
             }
         }
     }
 
-    public void send(String msg) {
+    private void handlerCommand(CommandContainer commandContainer) {
+        AnswerCode command = commandContainer.getCommand();
+        if (user == null) {
+            if (command == AnswerCode.REGISTER) {
+                User tempUser =new User(commandContainer.getLogin(),this,commandContainer.getRole(),TypeApp.CONSOLE);
+                CommandContainer answer = dataManipulate.register(tempUser);
+                if(answer.getServerInfo()==AnswerCode.GOOD_REGISTER) user=tempUser;
+                else send(answer);
+                return;
+            } else {
+                if (command == AnswerCode.LOGIN) {
+                    User tempUser =new User(commandContainer.getLogin(),this,commandContainer.getRole(),TypeApp.CONSOLE);
+                    CommandContainer answer = dataManipulate.login(tempUser);
+                    if(answer.getServerInfo()==AnswerCode.GOOD_LOGIN) user=tempUser;
+                    send(answer);
+                    return;
+                } else {
+                    if (command == AnswerCode.LEAVE_CHAT)
+                        send(new CommandContainer("Server",null, AnswerCode.NEED_REGISTER_OR_LOGIN));
+                    else if (command == AnswerCode.EXIT) send(new CommandContainer("Server",null, AnswerCode.EXIT));
+                    else {
+                        log.warn("unknown command " + commandContainer.toString());
+                        send(new CommandContainer("Server",null, AnswerCode.UNKNOWN_COMMAND));
+                        return;
+                    }
+                }
+            }
+        } else if (command == AnswerCode.LEAVE_CHAT) {
+            if (user.getRole() == Role.AGENT) send(new CommandContainer("Server",null, AnswerCode.CAN_NOT_LEAVE_AGENT));
+            else if (user.getChat() != null) {
+                user.leave();
+                send(new CommandContainer("Server",null, AnswerCode.LEAVE_CHAT));
+            } else send(new CommandContainer("Server",null, AnswerCode.DONT_HAVE_CHAT));
+        } else {
+            if (command == AnswerCode.EXIT) {
+                send(new CommandContainer("Server",null, AnswerCode.EXIT));
+                close();
+            } else {
+                if (command == AnswerCode.REGISTER || command == AnswerCode.LOGIN)
+                    send(new CommandContainer("Server", null,AnswerCode.YOU_REGISTER_OR_LOGIN_YET));
+                else {
+                    log.warn("unknown command " + commandContainer.toString());
+                    send(new CommandContainer("Server", null,AnswerCode.UNKNOWN_COMMAND));
+                }
+            }
+        }
+    }
+
+    public void send(CommandContainer commandContainer) {
+        String msg = json.toJson(commandContainer);
         if (!connect.isClosed()) {
             synchronized (this) {
                 try {
@@ -96,8 +143,17 @@ public class SocketHandler implements Runnable, ChatInterface {
         }
     }
 
-    public FindAgentSystem getFindAgentSystem() {
-        return findAgentSystem;
+    @Override
+    public void close() {
+        if (!connect.isClosed()) {
+            try {
+                user.leave();
+                dataManipulate.remove(user);
+                connect.close();
+            } catch (IOException ex) {
+                log.error("Error closing connection", ex);
+            }
+        }
     }
 
 }

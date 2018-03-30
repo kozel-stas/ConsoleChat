@@ -81,7 +81,7 @@
                         <configuration>
                             <systemProperties>
                             <systemProperty>
-                                <name>derby.stream.error.file</name>
+                                <login>derby.stream.error.file</login>
                                 <value>${project.build.directory}/derby.log</value>
                             </systemProperty>
                             </systemProperties>

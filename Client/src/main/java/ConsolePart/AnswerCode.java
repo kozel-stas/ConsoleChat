@@ -3,7 +3,10 @@ package ConsolePart;
 public enum AnswerCode {
     EXIT(600),
     MESSAGE(601),
-
+    REGISTER(602),
+    LOGIN(603),
+    GOOD_REGISTER(604),
+    GOOD_LOGIN(605),
 
     NEED_REGISTER_OR_LOGIN(101),
     YOU_REGISTER_OR_LOGIN_YET(102),

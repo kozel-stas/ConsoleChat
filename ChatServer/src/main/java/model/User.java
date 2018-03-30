@@ -1,32 +1,35 @@
 package model;
 
 import ConsolePart.SocketHandler;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Client {
+public class User {
     private String login;
     private Role role;
     private TypeApp typeApp;
+    private List<Chat> chat = new ArrayList();
+    private ChatInterface socket;
 
     private static int maxClient;
 
-    private List <Client> recipient=new ArrayList();
-    private ChatInterface socket;
 
     static {
-        maxClient=10;
+        maxClient = 10;
     }
 
 
-    private Client() {
+    private User() {
     }
 
-    public Client(String login, SocketHandler mysocket, Role role, TypeApp typeApp ) {
-        this.role=role;
+    public User(String login, SocketHandler socket, Role role, TypeApp typeApp) {
+        this.role = role;
         this.login = login;
-        this.mysocket = mysocket;
-        this.typeApp=typeApp;
+        this.login.intern();
+        this.socket = socket;
+        this.typeApp = typeApp;
+        if (role == Role.CLIENT) chat.add(new Chat(this));
     }
 
     public ChatInterface getSocket() {
@@ -37,42 +40,43 @@ public class Client {
         socket = chatInterface;
     }
 
-    public Client getRecipient() {
-        if(recipient.size()>0) return recipient.get(0);
+    public Chat getChat() {
+        if (chat.size() > 0) return chat.get(0);
         else return null;
     }
 
-    public Client getRecipient(String name){
-        for(Client client:this.recipient)
-            if(client.getLogin().equals(name))
-                return client;
+    public Chat getChat(String login) {
+        login.intern();
+        for (Chat chat : this.chat)
+            if (chat.getClient().getLogin() == login)
+                return chat;
         return null;
     }
 
-    public List getRecipients(){
-        return recipient;
+    public List getChats() {
+        return chat;
     }
 
-    public void addRecipient(Client receipt){
-        if(receipt!=null) {
-            if(checkMaxSize()) recipient.add(receipt);
-            else if(typeApp==TypeApp.CONSOLE) {
-                recipient.remove(0);
-                recipient.add(0,receipt);
-            }
+    public void addChat(Chat chat) {
+        if (chat == null) return;
+        if (checkMaxSize()) this.chat.add(chat);
+        else if (typeApp == TypeApp.CONSOLE) {
+            this.chat.clear();
+            this.chat.add(0, chat);
         }
+
     }
 
-    public void deleteReceipt(Client receipt){
-        this.recipient.remove(receipt);
+    public void delChat(Chat chat) {
+        this.chat.remove(chat);
     }
 
     public String getLogin() {
         return login;
     }
 
-    public boolean checkMaxSize(){
-        if(role==Role.AGENT && recipient.size()<maxClient && typeApp==TypeApp.WEB)
+    public boolean checkMaxSize() {
+        if (role == Role.AGENT && chat.size() < maxClient && typeApp == TypeApp.WEB)
             return true;
         return false;
     }
@@ -81,13 +85,24 @@ public class Client {
         this.typeApp = typeApp;
     }
 
+    public void leave() {
+        if (role == Role.AGENT) {
+            FindAgentSystem.getInstance().remove(this);
+            for (Chat chat : this.chat){
+                chat.agentLeave();
+            }
+        } else if (role == Role.CLIENT) {
+            if(chat.size()==1) chat.get(0).destroyChat();
+        }
+    }
+
     public Role getRole() {
         return role;
     }
 
     @Override
     public String toString() {
-        return "Login "+login+", role: "+role+", typeApp: "+typeApp;
+        return "Login " + login + ", role: " + role + ", typeApp: " + typeApp;
     }
 
 }
