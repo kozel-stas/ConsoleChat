@@ -93,7 +93,7 @@ public class SocketHandler implements Runnable, ChatInterface {
                     User tempUser = new User(commandContainer.getLogin(), this, commandContainer.getRole(), TypeApp.CONSOLE);
                     CommandContainer answer = dataManipulate.login(tempUser);
                     if (answer.getServerInfo() == AnswerCode.GOOD_LOGIN) user = tempUser;
-                    send(answer);
+                    else send(answer);
                     return;
                 } else {
                     if (command == AnswerCode.LEAVE_CHAT || command == AnswerCode.MESSAGE)

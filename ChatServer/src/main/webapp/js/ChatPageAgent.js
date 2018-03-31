@@ -54,29 +54,30 @@ $(document).ready(function () {
     socket.onmessage = function (event) {
         var incomingMessage = event.data;
         var answer = JSON.parse(incomingMessage);
-        var name = answer.name;
-        var isAgent = answer.isAgent;
+        var login = answer.login;
+        var role = answer.role;
         var message = answer.message;
-        var serverinfo = answer.serverinfo;
-        switch (serverinfo) {
-            case 'MESSAGE':
-                if (isAgent == true)
-                    document.getElementById('textArea'+name).value += "Агент ";
-                else document.getElementById('textArea'+name).value += "Клиент ";
-                document.getElementById('textArea'+name).value += name + ":    ";
-                document.getElementById('textArea'+name).value += message + '\n';
-                break;
+        var command=answer.command;
+        var serverInfo = answer.serverInfo;
+        if (command=='MESSAGE'){
+            if (role == 'AGENT')
+                document.getElementById('textArea'+login).value += "Агент ";
+            else document.getElementById('textArea'+login).value += "Клиент ";
+            document.getElementById('textArea'+login).value += login + ":    ";
+            document.getElementById('textArea'+login).value += message + '\n';
+        }
+        switch (serverInfo) {
             case 'CLIENT_LEAVE':
                 var answerMessage = 'Клиент отключился';
-                document.getElementById('textArea'+name).value += "Server:    ";
-                document.getElementById('textArea'+name).value += answerMessage + '\n';
-                deleteTab(name);
+                document.getElementById('textArea'+login).value += "Server:    ";
+                document.getElementById('textArea'+login).value += answerMessage + '\n';
+                deleteTab(login);
                 break;
             case 'NEW_CLIENT':
-                addNewTab(name)
+                addNewTab(login)
                 var answerMessage = 'Вы подключены к клиенту';
-                document.getElementById('textArea'+name).value += answerMessage + " ";
-                document.getElementById('textArea'+name).value += name + '\n';
+                document.getElementById('textArea'+login).value += answerMessage + " ";
+                document.getElementById('textArea'+login).value +=  login + '\n';
                 break;
         }
     };

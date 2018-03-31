@@ -23,7 +23,7 @@ public class User {
     private User() {
     }
 
-    public User(String login, SocketHandler socket, Role role, TypeApp typeApp) {
+    public User(String login, ChatInterface socket, Role role, TypeApp typeApp) {
         this.role = role;
         this.login = login;
         this.login.intern();
@@ -46,9 +46,8 @@ public class User {
     }
 
     public Chat getChat(String login) {
-        login.intern();
         for (Chat chat : this.chat)
-            if (chat.getClient().getLogin() == login)
+            if (login.equals(chat.getClient().getLogin()))
                 return chat;
         return null;
     }
@@ -85,14 +84,18 @@ public class User {
         this.typeApp = typeApp;
     }
 
+    public TypeApp getTypeApp() {
+        return typeApp;
+    }
+
     public void leave() {
         if (role == Role.AGENT) {
             FindAgentSystem.getInstance().remove(this);
-            for (Chat chat : this.chat){
+            for (Chat chat : this.chat) {
                 chat.agentLeave();
             }
         } else if (role == Role.CLIENT) {
-            if(chat.size()==1) chat.get(0).destroyChat();
+            if (chat.size() == 1) chat.get(0).destroyChat();
         }
     }
 

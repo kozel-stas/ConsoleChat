@@ -72,8 +72,8 @@ public class DataManipulate {
         if (find(user)) return new CommandContainer("Server", null, AnswerCode.NAME_ALREADY_USED);
         add(user);
         CommandContainer commandContainer = new CommandContainer(user.getLogin(), user.getRole(), AnswerCode.GOOD_REGISTER);
-        user.getSocket().send(commandContainer);
-        if (user.getRole() == Role.AGENT) {
+        if(user.getSocket()!=null)user.getSocket().send(commandContainer);
+        if (user.getSocket()!=null && user.getRole() == Role.AGENT) {
             findAgentSystem.findSystem(user);
             log.info("register new agent", user);
         } else log.info("register new client", user);
@@ -91,7 +91,9 @@ public class DataManipulate {
             else return new CommandContainer("Server", null, AnswerCode.DONT_HAVE_REGISTER_AGENT);
         databaseConnect.removeFromDatabase(user);
         add(user);
-        if (user.getRole() == Role.AGENT) {
+        CommandContainer commandContainer=new CommandContainer(user.getLogin(), user.getRole(), AnswerCode.GOOD_LOGIN);
+        if(user.getSocket()!=null)user.getSocket().send(commandContainer);
+        if (user.getSocket()!=null && user.getRole() == Role.AGENT) {
             findAgentSystem.findSystem(user);
             log.info("Login agent", user);
         } else log.info("Login client", user);

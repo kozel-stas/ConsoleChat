@@ -26,8 +26,8 @@
                     }
                 }%>
             <form method="post" action="/regLogClient">
-                <input class="inputLine" type="text" required placeholder="Type your login here..." login="login"><br>
-                <input type="hidden" login="typeOperation" value="register">
+                <input class="inputLine" type="text" required placeholder="Type your login here..." name="login"><br>
+                <input type="hidden" name="typeOperation" value="register">
                 <input class="button" type="submit" value="Sign up"><br>
             </form>
         </div>
@@ -50,8 +50,8 @@
                     }
                 }%>
             <form method="post" action="/regLogClient">
-                <input class="inputLine" type="text" required placeholder="Type your login here..." login="login"><br>
-                <input type="hidden" login="typeOperation" value="login">
+                <input class="inputLine" type="text" required placeholder="Type your login here..." name="login"><br>
+                <input type="hidden" name="typeOperation" value="login">
                 <input class="button" type="submit" value="Sign in"><br>
             </form>
         </div>

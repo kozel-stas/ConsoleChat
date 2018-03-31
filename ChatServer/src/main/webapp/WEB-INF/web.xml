@@ -3,62 +3,62 @@
         "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-    <!--<display-login>Archetype Created Web Application</display-login>-->
+    <display-name>Archetype Created Web Application</display-name>
 
-    <!--<servlet>-->
-        <!--<servlet-login>StartServlet</servlet-login>-->
-        <!--<servlet-class>WebPart.servlet.StartServlet</servlet-class>-->
-    <!--</servlet>-->
-    <!--<servlet-mapping>-->
-        <!--<servlet-login>StartServlet</servlet-login>-->
-        <!--<url-pattern>/start</url-pattern>-->
-    <!--</servlet-mapping>-->
+    <servlet>
+        <servlet-name>StartServlet</servlet-name>
+        <servlet-class>WebPart.servlet.StartServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StartServlet</servlet-name>
+        <url-pattern>/start</url-pattern>
+    </servlet-mapping>
 
 
-    <!--<servlet>-->
-        <!--<servlet-login>LoginServlet</servlet-login>-->
-        <!--<servlet-class>WebPart.servlet.RegLogClientServlet</servlet-class>-->
-    <!--</servlet>-->
-    <!--<servlet-mapping>-->
-        <!--<servlet-login>LoginServlet</servlet-login>-->
-        <!--<url-pattern>/regLogClient</url-pattern>-->
-    <!--</servlet-mapping>-->
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>WebPart.servlet.RegLogClientServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/regLogClient</url-pattern>
+    </servlet-mapping>
 
-    <!--<servlet>-->
-        <!--<servlet-login>SignOut</servlet-login>-->
-        <!--<servlet-class>WebPart.servlet.SignOut</servlet-class>-->
-    <!--</servlet>-->
-    <!--<servlet-mapping>-->
-        <!--<servlet-login>SignOut</servlet-login>-->
-        <!--<url-pattern>/signOut</url-pattern>-->
-    <!--</servlet-mapping>-->
+    <servlet>
+        <servlet-name>SignOut</servlet-name>
+        <servlet-class>WebPart.servlet.SignOut</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SignOut</servlet-name>
+        <url-pattern>/signOut</url-pattern>
+    </servlet-mapping>
 
-    <!--<servlet>-->
-        <!--<servlet-login>ChatPage</servlet-login>-->
-        <!--<servlet-class>WebPart.servlet.ChatServlet</servlet-class>-->
-    <!--</servlet>-->
-    <!--<servlet-mapping>-->
-        <!--<servlet-login>ChatPage</servlet-login>-->
-        <!--<url-pattern>/chat</url-pattern>-->
-    <!--</servlet-mapping>-->
+    <servlet>
+        <servlet-name>ChatPage</servlet-name>
+        <servlet-class>WebPart.servlet.ChatServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ChatPage</servlet-name>
+        <url-pattern>/chat</url-pattern>
+    </servlet-mapping>
 
-    <!--<servlet>-->
-        <!--<servlet-login>RegLogAgentServlet</servlet-login>-->
-        <!--<servlet-class>WebPart.servlet.RegLogAgentServlet</servlet-class>-->
-    <!--</servlet>-->
-    <!--<servlet-mapping>-->
-        <!--<servlet-login>RegLogAgentServlet</servlet-login>-->
-        <!--<url-pattern>/regLogAgent</url-pattern>-->
-    <!--</servlet-mapping>-->
+    <servlet>
+        <servlet-name>RegLogAgentServlet</servlet-name>
+        <servlet-class>WebPart.servlet.RegLogAgentServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegLogAgentServlet</servlet-name>
+        <url-pattern>/regLogAgent</url-pattern>
+    </servlet-mapping>
 
-    <!--<filter>-->
-        <!--<filter-login>SkipFilter</filter-login>-->
-        <!--<filter-class>WebPart.Filter.SkipFilter</filter-class>-->
-    <!--</filter>-->
-    <!--<filter-mapping>-->
-        <!--<filter-login>SkipFilter</filter-login>-->
-        <!--<url-pattern>/</url-pattern>-->
-    <!--</filter-mapping>-->
+    <filter>
+        <filter-name>SkipFilter</filter-name>
+        <filter-class>WebPart.Filter.SkipFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SkipFilter</filter-name>
+        <url-pattern>/</url-pattern>
+    </filter-mapping>
 
     <listener>
         <listener-class>
@@ -67,4 +67,3 @@
     </listener>
 
 </web-app>
-
