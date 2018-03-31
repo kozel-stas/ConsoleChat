@@ -42,7 +42,6 @@ public class Chat {
         if(this.agent!=null || agent==null) return;
         this.agent=agent;
         cancelWaitAgent();
-        //Доделать
     }
 
     public void agentLeave (){
@@ -56,13 +55,20 @@ public class Chat {
         agent=null;
     }
 
+    public boolean haveAgent() {
+        if(agent==null) return false;
+        return true;
+    }
+
     public void destroyChat (){
-        agent.getSocket().send(new CommandContainer(client.getLogin(),null ,AnswerCode.CLIENT_LEAVE));
-        agent.delChat(this);
-        if (findAgentSystem.findSystem(agent)) {
-            log.info("start conversation" + client.toString() + " " + agent.toString());
+        if(agent!=null) {
+            agent.getSocket().send(new CommandContainer(client.getLogin(), null, AnswerCode.CLIENT_LEAVE));
+            agent.delChat(this);
+            if (findAgentSystem.findSystem(agent)) {
+                log.info("start conversation" + client.toString() + " " + agent.toString());
+            }
+            agent = null;
         }
-        agent=null;
     }
 
     public boolean sendMessage(CommandContainer commandContainer) {

@@ -16,7 +16,7 @@ public class DatabaseConnect {
     private Connection connection;
     private PreparedStatement stmt;
 
-    protected DatabaseConnect() {
+    public DatabaseConnect() {
         createDatabase();
     }
 

@@ -60,12 +60,12 @@ public class SocketHandler implements Runnable, ChatInterface {
                 handlerCommand(commandContainer);
                 return;
             } else {
-                send(new CommandContainer("Server",null, AnswerCode.NEED_REGISTER_OR_LOGIN));
+                send(new CommandContainer("Server", null, AnswerCode.NEED_REGISTER_OR_LOGIN));
             }
         } else {
             if (commandContainer.getCommand() == AnswerCode.MESSAGE) {
-                if(user.getChat()!=null) user.getChat().sendMessage(commandContainer);
-                else send(new CommandContainer("Server",null,AnswerCode.DONT_HAVE_CLIENT));
+                if (user.getChat() != null) user.getChat().sendMessage(commandContainer);
+                else send(new CommandContainer("Server", null, AnswerCode.DONT_HAVE_CLIENT));
                 return;
             } else {
                 if (commandContainer.getCommand() != null) {
@@ -73,7 +73,7 @@ public class SocketHandler implements Runnable, ChatInterface {
                     return;
                 } else {
                     log.warn("unknown command " + commandContainer.toString());
-                    send(new CommandContainer("Server",null, AnswerCode.UNKNOWN_MISTAKE));
+                    send(new CommandContainer("Server", null, AnswerCode.UNKNOWN_MISTAKE));
                 }
             }
         }
@@ -83,45 +83,46 @@ public class SocketHandler implements Runnable, ChatInterface {
         AnswerCode command = commandContainer.getCommand();
         if (user == null) {
             if (command == AnswerCode.REGISTER) {
-                User tempUser =new User(commandContainer.getLogin(),this,commandContainer.getRole(),TypeApp.CONSOLE);
+                User tempUser = new User(commandContainer.getLogin(), this, commandContainer.getRole(), TypeApp.CONSOLE);
                 CommandContainer answer = dataManipulate.register(tempUser);
-                if(answer.getServerInfo()==AnswerCode.GOOD_REGISTER) user=tempUser;
+                if (answer.getServerInfo() == AnswerCode.GOOD_REGISTER) user = tempUser;
                 else send(answer);
                 return;
             } else {
                 if (command == AnswerCode.LOGIN) {
-                    User tempUser =new User(commandContainer.getLogin(),this,commandContainer.getRole(),TypeApp.CONSOLE);
+                    User tempUser = new User(commandContainer.getLogin(), this, commandContainer.getRole(), TypeApp.CONSOLE);
                     CommandContainer answer = dataManipulate.login(tempUser);
-                    if(answer.getServerInfo()==AnswerCode.GOOD_LOGIN) user=tempUser;
+                    if (answer.getServerInfo() == AnswerCode.GOOD_LOGIN) user = tempUser;
                     send(answer);
                     return;
                 } else {
-                    if (command == AnswerCode.LEAVE_CHAT)
-                        send(new CommandContainer("Server",null, AnswerCode.NEED_REGISTER_OR_LOGIN));
-                    else if (command == AnswerCode.EXIT) send(new CommandContainer("Server",null, AnswerCode.EXIT));
+                    if (command == AnswerCode.LEAVE_CHAT || command == AnswerCode.MESSAGE)
+                        send(new CommandContainer("Server", null, AnswerCode.NEED_REGISTER_OR_LOGIN));
+                    else if (command == AnswerCode.EXIT) send(new CommandContainer("Server", null, AnswerCode.EXIT));
                     else {
                         log.warn("unknown command " + commandContainer.toString());
-                        send(new CommandContainer("Server",null, AnswerCode.UNKNOWN_COMMAND));
+                        send(new CommandContainer("Server", null, AnswerCode.UNKNOWN_COMMAND));
                         return;
                     }
                 }
             }
         } else if (command == AnswerCode.LEAVE_CHAT) {
-            if (user.getRole() == Role.AGENT) send(new CommandContainer("Server",null, AnswerCode.CAN_NOT_LEAVE_AGENT));
-            else if (user.getChat() != null) {
+            if (user.getRole() == Role.AGENT)
+                send(new CommandContainer("Server", null, AnswerCode.CAN_NOT_LEAVE_AGENT));
+            else if (user.getChat().haveAgent()) {
                 user.leave();
-                send(new CommandContainer("Server",null, AnswerCode.LEAVE_CHAT));
-            } else send(new CommandContainer("Server",null, AnswerCode.DONT_HAVE_CHAT));
+                send(new CommandContainer("Server", null, AnswerCode.LEAVE_CHAT));
+            } else send(new CommandContainer("Server", null, AnswerCode.DONT_HAVE_CHAT));
         } else {
             if (command == AnswerCode.EXIT) {
-                send(new CommandContainer("Server",null, AnswerCode.EXIT));
+                send(new CommandContainer("Server", null, AnswerCode.EXIT));
                 close();
             } else {
                 if (command == AnswerCode.REGISTER || command == AnswerCode.LOGIN)
-                    send(new CommandContainer("Server", null,AnswerCode.YOU_REGISTER_OR_LOGIN_YET));
+                    send(new CommandContainer("Server", null, AnswerCode.YOU_REGISTER_OR_LOGIN_YET));
                 else {
                     log.warn("unknown command " + commandContainer.toString());
-                    send(new CommandContainer("Server", null,AnswerCode.UNKNOWN_COMMAND));
+                    send(new CommandContainer("Server", null, AnswerCode.UNKNOWN_COMMAND));
                 }
             }
         }
@@ -147,8 +148,10 @@ public class SocketHandler implements Runnable, ChatInterface {
     public void close() {
         if (!connect.isClosed()) {
             try {
-                user.leave();
-                dataManipulate.remove(user);
+                if (user != null) {
+                    user.leave();
+                    dataManipulate.remove(user);
+                }
                 connect.close();
             } catch (IOException ex) {
                 log.error("Error closing connection", ex);
