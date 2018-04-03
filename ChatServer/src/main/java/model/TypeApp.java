@@ -1,6 +1,6 @@
 package model;
 
 public enum TypeApp {
-    WEB,CONSOLE;
+    WEB,CONSOLE,REST;
 }
 

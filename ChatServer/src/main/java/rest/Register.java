@@ -1,0 +1,36 @@
+package rest;
+
+import com.google.gson.Gson;
+import model.*;
+import rest.SupporttClasses.PostMessageRequest;
+import rest.SupporttClasses.RestSocket;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.util.regex.Pattern;
+
+@Path("/register")
+public class Register {
+    private static Pattern validateLogin = Pattern.compile("^[A-z0-9]*$");
+    private static DataManipulate dataManipulate = DataManipulate.getInstance();
+    private static Gson json = new Gson();
+
+    @Path("/")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String RegisterClient_JSON(String msg) {
+        PostMessageRequest request = json.fromJson(msg, PostMessageRequest.class);
+        if (request.getRole() != null && request.getLogin() != null) {
+            if (validateLogin.matcher(request.getLogin()).find()) {
+                User user = new User(request.getLogin(), new RestSocket(), request.getRole(), TypeApp.REST);
+                CommandContainer commandContainer = dataManipulate.register(user);
+                return json.toJson(commandContainer);
+            }
+            return json.toJson(new CommandContainer("Server",null,AnswerCode.INVALID_CHARACTERS));
+        }
+        return json.toJson(new CommandContainer("Server", null, AnswerCode.UNKNOWN_FORM_REQUEST));
+    }
+
+
+}

@@ -24,6 +24,14 @@ public class DataManipulate {
         return dataManipulate;
     }
 
+    public User getUser(String login,Role role){
+        if(Role.CLIENT==role){
+            return users.get(login);
+        } else {
+            return agents.get(login);
+        }
+    }
+
     public boolean find(User user) {
         if (user.getRole() == Role.CLIENT) return findClient(user);
         else return findAgent(user);
@@ -53,27 +61,33 @@ public class DataManipulate {
         agents.put(agent.getLogin(), agent);
     }
 
-    public void remove(User user) {
-        if (user.getRole() == Role.CLIENT) removeClient(user);
-        else removeAgent(user);
+    public boolean remove(User user) {
+        if (user.getRole() == Role.CLIENT) return removeClient(user);
+        else return removeAgent(user);
     }
 
-    private void removeAgent(User agent) {
-        agents.remove(agent.getLogin(), agent);
-        databaseConnect.addInDatabase(agent);
+    private boolean removeAgent(User agent) {
+        if (agents.remove(agent.getLogin(), agent)) {
+            databaseConnect.addInDatabase(agent);
+            return true;
+        }
+        return false;
     }
 
-    private void removeClient(User client) {
-        users.remove(client.getLogin(), client);
-        databaseConnect.addInDatabase(client);
+    private boolean removeClient(User client) {
+        if (users.remove(client.getLogin(), client)) {
+            databaseConnect.addInDatabase(client);
+            return true;
+        }
+        return false;
     }
 
     public CommandContainer register(User user) {
-        if (find(user)) return new CommandContainer("Server", null, AnswerCode.NAME_ALREADY_USED);
+        if (find(user) || databaseConnect.findInDatabase(user)) return new CommandContainer("Server", null, AnswerCode.NAME_ALREADY_USED);
         add(user);
         CommandContainer commandContainer = new CommandContainer(user.getLogin(), user.getRole(), AnswerCode.GOOD_REGISTER);
-        if(user.getSocket()!=null)user.getSocket().send(commandContainer);
-        if (user.getSocket()!=null && user.getRole() == Role.AGENT) {
+        user.getSocket().send(commandContainer);
+        if (user.getRole() == Role.AGENT) {
             findAgentSystem.findSystem(user);
             log.info("register new agent", user);
         } else log.info("register new client", user);
@@ -91,9 +105,9 @@ public class DataManipulate {
             else return new CommandContainer("Server", null, AnswerCode.DONT_HAVE_REGISTER_AGENT);
         databaseConnect.removeFromDatabase(user);
         add(user);
-        CommandContainer commandContainer=new CommandContainer(user.getLogin(), user.getRole(), AnswerCode.GOOD_LOGIN);
-        if(user.getSocket()!=null)user.getSocket().send(commandContainer);
-        if (user.getSocket()!=null && user.getRole() == Role.AGENT) {
+        CommandContainer commandContainer = new CommandContainer(user.getLogin(), user.getRole(), AnswerCode.GOOD_LOGIN);
+        user.getSocket().send(commandContainer);
+        if (user.getRole() == Role.AGENT) {
             findAgentSystem.findSystem(user);
             log.info("Login agent", user);
         } else log.info("Login client", user);

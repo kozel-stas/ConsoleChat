@@ -42,7 +42,7 @@ public class WebSocket implements ChatInterface {
     @OnMessage
     public void input(String msg) {
         if ("LEAVE".equals(msg) && user.getRole() == Role.CLIENT) {
-            if (!user.getChat().haveAgent()) {
+            if (user.getChat().haveAgent()) {
                 send(new CommandContainer("Server", null, AnswerCode.LEAVE_CHAT));
                 user.leave();
             } else send(new CommandContainer("Server", null, AnswerCode.DONT_HAVE_CHAT));
@@ -53,8 +53,7 @@ public class WebSocket implements ChatInterface {
             else if (user.getChat(messageWeb.getName()) != null) {
                 user.getChat(messageWeb.getName()).sendMessage(commandContainer);
             } else {
-                if (user.getRole() == Role.AGENT)
-                    send(new CommandContainer("Server", null, AnswerCode.DONT_HAVE_CLIENT));
+                send(new CommandContainer("Server", null, AnswerCode.DONT_HAVE_CLIENT));
             }
         }
     }

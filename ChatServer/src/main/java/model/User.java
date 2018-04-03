@@ -75,7 +75,7 @@ public class User {
     }
 
     public boolean checkMaxSize() {
-        if (role == Role.AGENT && chat.size() < maxClient && typeApp == TypeApp.WEB)
+        if (role == Role.AGENT && chat.size() < maxClient && (typeApp == TypeApp.WEB || typeApp == TypeApp.REST))
             return true;
         return false;
     }
@@ -102,6 +102,10 @@ public class User {
     public Role getRole() {
         return role;
     }
+
+//    public boolean checkUser(){
+//        if(role!=null && login!=null &)
+//    }
 
     @Override
     public String toString() {
