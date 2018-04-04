@@ -2,9 +2,11 @@ package rest;
 
 import com.google.gson.Gson;
 import model.*;
+import model.SupportClasses.AnswerCode;
+import model.SupportClasses.CommandContainer;
+import model.User;
 import rest.SupporttClasses.PostMessageRequest;
 
-import javax.jws.soap.SOAPBinding;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 

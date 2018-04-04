@@ -2,6 +2,10 @@ package ConsolePart.test;
 
 import ConsolePart.SocketHandler;
 import model.*;
+import model.SupportClasses.AnswerCode;
+import model.SupportClasses.CommandContainer;
+import model.SupportClasses.Role;
+import model.User;
 import org.junit.*;
 
 import static org.mockito.Mockito.mock;
@@ -23,7 +27,6 @@ public class DataManipulateTest {
 
     @After
     public void finaly() {
-        dataManipulate.clear();
         user = null;
     }
 

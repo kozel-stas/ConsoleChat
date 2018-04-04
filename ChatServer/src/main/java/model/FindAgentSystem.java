@@ -1,8 +1,13 @@
 package model;
 
+import model.SupportClasses.AnswerCode;
+import model.SupportClasses.CommandContainer;
+import model.SupportClasses.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class FindAgentSystem {
@@ -50,6 +55,15 @@ public class FindAgentSystem {
                 return false;
             }
         }
+    }
+
+    public ConcurrentLinkedQueue<User> getFreeAgents (){
+        return waitAgents;
+    }
+
+
+    public ConcurrentLinkedQueue<User> getWaitClients(){
+        return waitClient;
     }
 
     public void remove(User user) {

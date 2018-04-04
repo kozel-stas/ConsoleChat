@@ -1,7 +1,7 @@
 package ConsolePart.test;
 
 import model.DatabaseConnect;
-import model.Role;
+import model.SupportClasses.Role;
 import model.User;
 import org.junit.*;
 

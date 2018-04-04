@@ -2,6 +2,7 @@ package ConsolePart;
 
 import com.google.gson.Gson;
 import model.*;
+import model.SupportClasses.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

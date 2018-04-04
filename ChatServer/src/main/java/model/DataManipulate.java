@@ -1,8 +1,13 @@
 package model;
 
+import model.SupportClasses.AnswerCode;
+import model.SupportClasses.CommandContainer;
+import model.SupportClasses.Role;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -11,7 +16,7 @@ public class DataManipulate {
     private static DatabaseConnect databaseConnect;
     private static FindAgentSystem findAgentSystem;
     private static Logger log = LoggerFactory.getLogger(DataManipulate.class);
-    private ConcurrentMap<String, User> users = new ConcurrentHashMap();
+    private ConcurrentMap<String, User> clients = new ConcurrentHashMap();
     private ConcurrentMap<String, User> agents = new ConcurrentHashMap();
 
     private DataManipulate() {
@@ -24,9 +29,9 @@ public class DataManipulate {
         return dataManipulate;
     }
 
-    public User getUser(String login,Role role){
-        if(Role.CLIENT==role){
-            return users.get(login);
+    public User getUser(String login, Role role) {
+        if (Role.CLIENT == role) {
+            return clients.get(login);
         } else {
             return agents.get(login);
         }
@@ -37,8 +42,12 @@ public class DataManipulate {
         else return findAgent(user);
     }
 
+    public boolean find(String login,Role role){
+        return databaseConnect.findInDatabase(new User(login,null,role,null));
+    }
+
     private boolean findClient(User client) {
-        if (users.get(client.getLogin()) != null) return true;
+        if (clients.get(client.getLogin()) != null) return true;
         return false;
     }
 
@@ -54,7 +63,7 @@ public class DataManipulate {
     }
 
     private void addClient(User client) {
-        users.put(client.getLogin(), client);
+        clients.put(client.getLogin(), client);
     }
 
     private void addAgent(User agent) {
@@ -75,7 +84,7 @@ public class DataManipulate {
     }
 
     private boolean removeClient(User client) {
-        if (users.remove(client.getLogin(), client)) {
+        if (clients.remove(client.getLogin(), client)) {
             databaseConnect.addInDatabase(client);
             return true;
         }
@@ -83,11 +92,12 @@ public class DataManipulate {
     }
 
     public CommandContainer register(User user) {
-        if (find(user) || databaseConnect.findInDatabase(user)) return new CommandContainer("Server", null, AnswerCode.NAME_ALREADY_USED);
+        if (find(user) || databaseConnect.findInDatabase(user))
+            return new CommandContainer("Server", null, AnswerCode.NAME_ALREADY_USED);
         add(user);
         CommandContainer commandContainer = new CommandContainer(user.getLogin(), user.getRole(), AnswerCode.GOOD_REGISTER);
-        user.getSocket().send(commandContainer);
-        if (user.getRole() == Role.AGENT) {
+        if (user.getSocket() != null) user.getSocket().send(commandContainer);
+        if (user.getSocket() !=null && user.getRole() == Role.AGENT) {
             findAgentSystem.findSystem(user);
             log.info("register new agent", user);
         } else log.info("register new client", user);
@@ -106,16 +116,26 @@ public class DataManipulate {
         databaseConnect.removeFromDatabase(user);
         add(user);
         CommandContainer commandContainer = new CommandContainer(user.getLogin(), user.getRole(), AnswerCode.GOOD_LOGIN);
-        user.getSocket().send(commandContainer);
-        if (user.getRole() == Role.AGENT) {
+        if (user.getSocket() != null) user.getSocket().send(commandContainer);
+        if (user.getSocket() !=null && user.getRole() == Role.AGENT) {
             findAgentSystem.findSystem(user);
             log.info("Login agent", user);
         } else log.info("Login client", user);
         return new CommandContainer(user.getLogin(), user.getRole(), AnswerCode.GOOD_LOGIN);
     }
 
+    public Collection<User> getRegisterAgent(){
+        Collection<User> users =databaseConnect.getAllUser(Role.AGENT);
+       return CollectionUtils.union(users,agents.values());
+    }
+
+    public Collection<User> getRegisterClient(){
+        Collection<User> users =databaseConnect.getAllUser(Role.CLIENT);
+        return CollectionUtils.union(users,clients.values());
+    }
+
     public void clear() {
         agents.clear();
-        users.clear();
+        clients.clear();
     }
 }

@@ -1,7 +1,7 @@
 package rest.SupporttClasses;
 
-import model.ChatInterface;
-import model.CommandContainer;
+import model.SupportClasses.ChatInterface;
+import model.SupportClasses.CommandContainer;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,5 +1,4 @@
-package model;
-
+package model.SupportClasses;
 
 public final class CommandContainer {
 

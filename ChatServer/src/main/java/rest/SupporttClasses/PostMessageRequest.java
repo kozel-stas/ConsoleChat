@@ -1,6 +1,6 @@
 package rest.SupporttClasses;
 
-import model.Role;
+import model.SupportClasses.Role;
 
 public class PostMessageRequest {
     private String login;

@@ -3,6 +3,9 @@ package ConsolePart.test;
 import com.google.gson.Gson;
 import model.*;
 import ConsolePart.SocketHandler;
+import model.SupportClasses.AnswerCode;
+import model.SupportClasses.CommandContainer;
+import model.SupportClasses.Role;
 import org.junit.*;
 
 import java.io.ByteArrayInputStream;

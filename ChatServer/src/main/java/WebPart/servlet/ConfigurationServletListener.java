@@ -1,18 +1,11 @@
 package WebPart.servlet;
 
 import ConsolePart.ChatServer;
-import model.AnswerCode;
 import model.DataManipulate;
-import model.DatabaseConnect;
 import model.FindAgentSystem;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
-import java.awt.dnd.DropTarget;
-import java.io.*;
-import java.util.EnumMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

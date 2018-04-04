@@ -2,6 +2,10 @@ package ConsolePart.test;
 
 import ConsolePart.SocketHandler;
 import model.*;
+import model.SupportClasses.AnswerCode;
+import model.SupportClasses.CommandContainer;
+import model.SupportClasses.Role;
+import model.User;
 import org.junit.*;
 import org.mockito.stubbing.Answer;
 

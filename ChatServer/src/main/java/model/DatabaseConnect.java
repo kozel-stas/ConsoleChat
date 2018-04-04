@@ -1,13 +1,18 @@
 package model;
 
+import model.SupportClasses.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jws.soap.SOAPBinding;
 import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class DatabaseConnect {
     private static DatabaseConnect databaseConnect = null;
@@ -81,5 +86,20 @@ public class DatabaseConnect {
         }
     }
 
-
+    public Collection<User> getAllUser(Role role) {
+        Collection<User> users = new ArrayList<>();
+        String tableName = role == Role.CLIENT ? "Client" : "Agent";
+        try {
+            stmt = connection.prepareStatement("SELECT name FROM " + tableName);
+            ResultSet rst = stmt.executeQuery();
+            while (rst.next()) {
+                User user = new User(rst.getString("name"), null, role, null);
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            log.warn("Error findInDatabase", e);
+            return null;
+        }
+        return users;
+    }
 }

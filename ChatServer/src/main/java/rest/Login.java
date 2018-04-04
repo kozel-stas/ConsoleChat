@@ -2,6 +2,10 @@ package rest;
 
 import com.google.gson.Gson;
 import model.*;
+import model.SupportClasses.AnswerCode;
+import model.SupportClasses.CommandContainer;
+import model.SupportClasses.TypeApp;
+import model.User;
 import rest.SupporttClasses.PostMessageRequest;
 import rest.SupporttClasses.RestSocket;
 

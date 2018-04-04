@@ -1,17 +1,22 @@
 package model;
 
-import ConsolePart.SocketHandler;
+import com.google.gson.annotations.Expose;
+import model.SupportClasses.ChatInterface;
+import model.SupportClasses.Role;
+import model.SupportClasses.TypeApp;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class User {
+    @Expose
     private String login;
+    @Expose
     private Role role;
+    @Expose
     private TypeApp typeApp;
     private List<Chat> chat = new ArrayList();
     private ChatInterface socket;
-
     private static int maxClient;
 
 
@@ -102,10 +107,6 @@ public class User {
     public Role getRole() {
         return role;
     }
-
-//    public boolean checkUser(){
-//        if(role!=null && login!=null &)
-//    }
 
     @Override
     public String toString() {
