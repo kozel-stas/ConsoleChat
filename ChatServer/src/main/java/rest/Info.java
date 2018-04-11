@@ -2,16 +2,23 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.swagger.annotations.Api;
 import model.*;
 import model.SupportClasses.ConvertUser;
 import model.SupportClasses.Role;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
+@Api(value = "Info")
 @Path("/info")
 public class Info {
     private static FindAgentSystem findAgentSystem = FindAgentSystem.getInstance();
@@ -56,12 +63,6 @@ public class Info {
     public String chats_JSON() {
         return json.toJson(Chat.getChats());
     }
-
-//    private Collection pageCollection(int page, int size, Collection collection){
-//        if(size*page<collection.size()){
-//            return collection.(page*size,(page+1)*size>collection.size()?collection.size():(page+1)*size);
-//        } return null;
-//    }
 
     @Path("/getInfoAgent")
     @GET

@@ -1,6 +1,7 @@
 package rest;
 
 import com.google.gson.Gson;
+import io.swagger.annotations.Api;
 import model.*;
 import model.SupportClasses.AnswerCode;
 import model.SupportClasses.CommandContainer;
@@ -13,6 +14,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.regex.Pattern;
 
+@Api(value = "Login")
 @Path("/login")
 public class Login {
     private static Pattern validateLogin = Pattern.compile("^[A-z0-9]*$");

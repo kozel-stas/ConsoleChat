@@ -1,6 +1,7 @@
 package rest;
 
 import com.google.gson.Gson;
+import io.swagger.annotations.Api;
 import model.*;
 import model.SupportClasses.AnswerCode;
 import model.SupportClasses.CommandContainer;
@@ -12,6 +13,7 @@ import rest.SupporttClasses.RestSocket;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+@Api(value = "Message")
 @Path("/message")
 public class Message {
     private static Gson json = new Gson();

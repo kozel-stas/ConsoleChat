@@ -1,6 +1,7 @@
 package rest;
 
 import com.google.gson.Gson;
+import io.swagger.annotations.Api;
 import model.*;
 import model.SupportClasses.AnswerCode;
 import model.SupportClasses.CommandContainer;
@@ -14,6 +15,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+@Api(value = "Leave")
 @Path("/leave")
 public class Leave {
     private static DataManipulate dataManipulate=DataManipulate.getInstance();
